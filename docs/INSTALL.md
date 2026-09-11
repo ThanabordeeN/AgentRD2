@@ -1,6 +1,16 @@
 # Installation
 
-Three tiers. Most people only need the first two.
+Two ways to run this: a **standalone executable** (nothing to install at all)
+or the **Python runtime** (no third-party packages, but Python itself is
+needed). Both speak the same protocol, share the same `config/` and `data/`
+files, and write the same timeline format.
+
+| Path | What you need | Best for |
+|---|---|---|
+| **A — Standalone `rdr2-npc.exe`** | nothing — one download | playing; no Python, no Go, no pip |
+| **B — Python runtime** | Python 3.10+ (no packages) | hacking on the code, offline demos |
+
+Python path, in tiers:
 
 | Tier | What you get | Requirements | Time |
 |---|---|---|---|
@@ -8,13 +18,56 @@ Three tiers. Most people only need the first two.
 | **1 — Standard** | Above + live model over the network | Python 3.10+ and an API key | ~1 min |
 | **2 — In-game bridge** | Above + `rdr2_ai_bridge.asi` inside RDR2 | + Windows and ScriptHookRDR2 (compiler only if you build it yourself) | ~2–10 min |
 
-The runtime core has **no third-party Python dependencies**. `pip` is only ever
+The Python runtime core has **no third-party dependencies**. `pip` is only ever
 needed for the optional Google ADK or local-audio extras, so a fresh checkout
 runs immediately.
 
 ---
 
-## TL;DR — copy and paste
+## A — Standalone executable (no Python)
+
+Download the runtime and run it. Nothing else to install:
+
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2-npc.exe -OutFile rdr2-npc.exe
+.\rdr2-npc.exe --check          # verify the installation
+.\rdr2-npc.exe --backend adk    # or --backend rule for an offline run
+```
+
+```bash
+# any OS (build it yourself, needs Go 1.27+)
+cd runtime-go && go build -trimpath -ldflags "-s -w" -o rdr2-npc ./cmd/rdr2-npc
+```
+
+The executable looks for `config/` and `data/` next to itself first, then in the
+working directory tree, so a portable folder works:
+
+```text
+rdr2-npc.exe
+config/settings.json
+data/profiles/  data/wiki/  data/quests/  data/timelines/
+```
+
+Model access is configured exactly like the Python runtime — CLI flag >
+environment (`.env`) > `config/settings.json`:
+
+```powershell
+.\rdr2-npc.exe --api-key "sk-..." --backend adk
+```
+
+Useful flags:
+
+| Flag | Meaning |
+|---|---|
+| `--check` | doctor: settings, packs, timeline, tools, credentials |
+| `--backend rule\|adk` | deterministic offline backend, or the model backend |
+| `--scenarios <dir>` | replay the shared scenario suite (parity harness) |
+| `--host` / `--port` | IPC bind address for the in-game bridge |
+| `--version` | build information |
+
+---
+
+## TL;DR — copy and paste (Python path)
 
 ```bash
 # Linux / macOS

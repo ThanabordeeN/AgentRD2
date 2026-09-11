@@ -1,10 +1,21 @@
 package events
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/project"
 )
+
+// normalizer is shorthand for the stateless normalizer used across the tests.
+func normalizer() *Normalizer { return NewNormalizer() }
 
 // TestWorldStateFromMessage mirrors the Python normalizer test and covers the
 // missing-npc_id error.
@@ -105,7 +116,7 @@ func TestEventFromMessageCanonical(t *testing.T) {
 	}
 }
 
-// TestEventFromMessageAcceptsUppercaseAndNameAlias covers the ``name`` fallback
+// TestEventFromMessageAcceptsUppercaseAndNameAlias covers the `name` fallback
 // and the already-canonical spelling.
 func TestEventFromMessageAcceptsUppercaseAndNameAlias(t *testing.T) {
 	normalizer := NewNormalizer()
@@ -137,11 +148,11 @@ func TestEventFromMessageAcceptsUppercaseAndNameAlias(t *testing.T) {
 func TestEventFromMessageValidation(t *testing.T) {
 	normalizer := NewNormalizer()
 	tests := []struct {
-		name      string
-		raw       map[string]any
-		seq       int
-		def       string
-		wantIn    string
+		name   string
+		raw    map[string]any
+		seq    int
+		def    string
+		wantIn string
 	}{
 		{"missing npc_id", map[string]any{"event_name": "A_EVENT"}, 1, "", "missing npc_id"},
 		{"empty npc_id with no default", map[string]any{"npc_id": "", "event_name": "A_EVENT"}, 1, "", "missing npc_id"},
@@ -256,7 +267,7 @@ func TestEventFromMessageOptionalFields(t *testing.T) {
 	}
 }
 
-// TestEventFromMessageFalsyOptionalValues mirrors Python's ``x or default``
+// TestEventFromMessageFalsyOptionalValues mirrors Python's `x or default`
 // shortcuts for every empty container.
 func TestEventFromMessageFalsyOptionalValues(t *testing.T) {
 	normalizer := NewNormalizer()
@@ -300,7 +311,7 @@ func TestEventFromMessageFalsyOptionalValues(t *testing.T) {
 }
 
 // TestEventFromMessageTrailingNewlineName pins the Python regex nuance: Python's
-// ``$`` also matches before one trailing newline, and the Go port accepts the
+// `$` also matches before one trailing newline, and the Go port accepts the
 // same language so a name both runtimes accept cannot diverge.
 func TestEventFromMessageTrailingNewlineName(t *testing.T) {
 	normalizer := NewNormalizer()
@@ -350,7 +361,7 @@ func TestPlayerSpokeAndNPCSpoke(t *testing.T) {
 	}
 }
 
-// TestSpokeExtraOverridesText checks Python's ``{"text": text, **data}`` order.
+// TestSpokeExtraOverridesText checks Python's `{"text": text, **data}` order.
 func TestSpokeExtraOverridesText(t *testing.T) {
 	normalizer := NewNormalizer()
 
@@ -518,4 +529,228 @@ func TestNormalizerIsStatelessAndConcurrent(t *testing.T) {
 			t.Fatal(got)
 		}
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Differential check against the reference Python normalizer
+// ---------------------------------------------------------------------------
+
+// differentialEvents are payloads both implementations must normalise
+// identically. Every case supplies timestamp and event_id so neither side has
+// to generate a non-deterministic value.
+var differentialEvents = []struct {
+	raw          map[string]any
+	seq          int
+	defaultNPCID string
+}{
+	{
+		raw: map[string]any{
+			"npc_id": "npc_1", "event_name": "player_threatened_npc",
+			"entities": "player", "tags": "threat",
+			"data":       map[string]any{"weapon": "revolver", "distance": 2.6},
+			"importance": 1.5, "timestamp": 1700000000.25, "event_id": "evt_diff_1",
+		},
+		seq: 7,
+	},
+	{
+		raw: map[string]any{
+			"npc_id": "npc_1", "name": "gunshot_heard", "entities": []any{"player", "npc_1"},
+			"tags": []any{"world"}, "data": map[string]any{"distance": 30},
+			"timestamp": 1700000001.5, "event_id": "evt_diff_2",
+		},
+		seq: 8,
+	},
+	{
+		raw: map[string]any{
+			"event_name": "npc_activated", "data": map[string]any{"source": "scan"},
+			"timestamp": 1700000002.0, "event_id": "evt_diff_3",
+			"importance": 0.25, "summary": "Elias s'éveille <encore>",
+		},
+		seq: 1, defaultNPCID: "npc_default",
+	},
+	{
+		raw: map[string]any{
+			"npc_id": "npc_1", "event_name": "PLAYER_HELPED_NPC",
+			"data":      map[string]any{"note": nil, "nested": map[string]any{"drop": nil, "keep": 1}},
+			"game_time": map[string]any{"day": 2, "hour": 9, "minute": 30},
+			"location":  map[string]any{"region": "Valentine", "position": []any{1.5, 2.0, 3}},
+			"summary":   "", "importance": 0, "timestamp": 0, "event_id": "evt_diff_4",
+		},
+		seq: 2,
+	},
+	{
+		raw: map[string]any{
+			"npc_id": "npc_1", "event_name": "A_EVENT", "data": []any{},
+			"entities": []any{}, "tags": nil, "importance": "0.75",
+			"timestamp": 1700000003.5, "event_id": "evt_diff_5",
+		},
+		seq: 3,
+	},
+	{
+		raw: map[string]any{
+			"npc_id": "npc_1", "event_name": "", "name": "fallback_name",
+			"timestamp": 1700000004.5, "event_id": "evt_diff_6",
+		},
+		seq: 4,
+	},
+	{raw: map[string]any{"event_name": "A_EVENT"}, seq: 1},
+	{raw: map[string]any{"npc_id": "npc_1"}, seq: 1},
+	{raw: map[string]any{"npc_id": "npc_1", "event_name": "player is evil"}, seq: 1},
+	{raw: map[string]any{"npc_id": "npc_1", "event_name": "A_EVENT", "data": []any{1}}, seq: 1},
+	{raw: map[string]any{"npc_id": "npc_1", "event_name": "A_EVENT"}, seq: 0},
+}
+
+// differentialHelpers are the standard fact events both implementations build.
+var differentialHelpers = map[string]any{
+	"npc_id":   "npc_1",
+	"text":     "Where are you headed?",
+	"npc_text": "Valentine.",
+	"extra":    map[string]any{"emotion": "calm", "target": "player"},
+	"action_result": map[string]any{
+		"type": "action_result", "npc_id": "npc_1", "status": "failed",
+		"tool": "go_to", "request_id": "act_1", "reason": "path_unreachable",
+	},
+	"goal_data": map[string]any{"goal": "find shelter"},
+}
+
+// TestMatchesPythonNormalizer runs the reference implementation from the
+// repository and compares normalised events and helper payloads. It is skipped
+// when python3 or the Python tree is unavailable.
+func TestMatchesPythonNormalizer(t *testing.T) {
+	python, err := exec.LookPath("python3")
+	if err != nil {
+		t.Skip("python3 not available")
+	}
+	normalizerPath := project.Resolve(filepath.Join("runtime", "events", "normalizer.py"))
+	if _, err := os.Stat(normalizerPath); err != nil {
+		t.Skipf("reference normalizer not found at %s: %v", normalizerPath, err)
+	}
+
+	type eventCase struct {
+		Raw          map[string]any `json:"raw"`
+		Seq          int            `json:"seq"`
+		DefaultNPCID string         `json:"default_npc_id"`
+	}
+	events := make([]eventCase, 0, len(differentialEvents))
+	for _, test := range differentialEvents {
+		events = append(events, eventCase{Raw: test.raw, Seq: test.seq, DefaultNPCID: test.defaultNPCID})
+	}
+	request := map[string]any{"events": events, "helpers": differentialHelpers}
+	encoded, err := json.Marshal(request)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+
+	command := exec.Command(python, "-c", pythonNormalizerProbe)
+	command.Dir = project.Root()
+	command.Stdin = bytes.NewReader(encoded)
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("python probe failed: %v\n%s", err, output)
+	}
+
+	var response struct {
+		Events []struct {
+			OK    bool           `json:"ok"`
+			Error string         `json:"error"`
+			Event map[string]any `json:"event"`
+		} `json:"events"`
+		Helpers map[string]map[string]any `json:"helpers"`
+	}
+	if err := json.Unmarshal(output, &response); err != nil {
+		t.Fatalf("decode probe output: %v\n%s", err, output)
+	}
+	if len(response.Events) != len(differentialEvents) {
+		t.Fatalf("probe returned %d events, want %d", len(response.Events), len(differentialEvents))
+	}
+
+	for index, test := range differentialEvents {
+		reference := response.Events[index]
+		event, err := normalizer().EventFromMessage(test.raw, test.seq, test.defaultNPCID)
+		if !reference.OK {
+			if err == nil {
+				t.Fatalf("case %d: Python rejected the payload (%s) but the Go port accepted it", index, reference.Error)
+			}
+			continue
+		}
+		if err != nil {
+			t.Fatalf("case %d: Python accepted the payload but the Go port failed: %v", index, err)
+		}
+		got := decodeJSONValue(t, event.ToMap())
+		want := decodeJSONValue(t, reference.Event)
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("case %d mismatch:\n got %s\nwant %s", index, mustJSON(t, got), mustJSON(t, want))
+		}
+	}
+
+	helpers := map[string]map[string]any{
+		"player_spoke":  normalizer().PlayerSpoke("npc_1", "Where are you headed?", differentialHelpers["extra"].(map[string]any)),
+		"npc_spoke":     normalizer().NPCSpoke("npc_1", "Valentine.", differentialHelpers["extra"].(map[string]any)),
+		"action_result": normalizer().ActionResult(differentialHelpers["action_result"].(map[string]any)),
+		"goal_event":    normalizer().GoalEvent("npc_1", "GOAL_SET", map[string]any{"goal": "find shelter"}),
+	}
+	for name, want := range response.Helpers {
+		got, ok := helpers[name]
+		if !ok {
+			t.Fatalf("no Go helper named %q", name)
+		}
+		if !reflect.DeepEqual(decodeJSONValue(t, got), decodeJSONValue(t, want)) {
+			t.Fatalf("%s mismatch:\n got %s\nwant %s", name, mustJSON(t, got), mustJSON(t, want))
+		}
+	}
+}
+
+// pythonNormalizerProbe normalises the request with the reference
+// implementation and prints one JSON document.
+const pythonNormalizerProbe = `import json, sys
+from runtime.events.normalizer import EventNormalizer
+
+request = json.load(sys.stdin)
+normalizer = EventNormalizer()
+out = {"events": [], "helpers": {}}
+for case in request["events"]:
+    try:
+        event = normalizer.event_from_message(
+            case["raw"], seq=case["seq"], default_npc_id=case.get("default_npc_id")
+        )
+        out["events"].append({"ok": True, "event": event.to_dict()})
+    except Exception as exc:  # noqa: BLE001
+        out["events"].append({"ok": False, "error": type(exc).__name__})
+
+helpers = request["helpers"]
+out["helpers"]["player_spoke"] = normalizer.player_spoke(
+    helpers["npc_id"], helpers["text"], **helpers["extra"]
+)
+out["helpers"]["npc_spoke"] = normalizer.npc_spoke(
+    helpers["npc_id"], helpers["npc_text"], **helpers["extra"]
+)
+out["helpers"]["action_result"] = normalizer.action_result(helpers["action_result"])
+out["helpers"]["goal_event"] = normalizer.goal_event(
+    helpers["npc_id"], "GOAL_SET", **helpers["goal_data"]
+)
+print(json.dumps(out, ensure_ascii=False))
+`
+
+// decodeJSONValue round-trips a payload through JSON so both sides are compared
+// as decoded JSON values rather than as Go types.
+func decodeJSONValue(t *testing.T, value any) any {
+	t.Helper()
+	encoded, err := json.Marshal(value)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	var decoded any
+	if err := json.Unmarshal(encoded, &decoded); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+	return decoded
+}
+
+func mustJSON(t *testing.T, value any) string {
+	t.Helper()
+	encoded, err := json.Marshal(value)
+	if err != nil {
+		t.Fatalf("Marshal: %v", err)
+	}
+	return string(encoded)
 }

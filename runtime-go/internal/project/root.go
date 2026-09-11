@@ -1,6 +1,6 @@
 // Package project resolves where the runtime's data lives.
 //
-// The Python runtime derived this from ``__file__``. A Go binary may also be
+// The Python runtime derived this from “__file__“. A Go binary may also be
 // shipped as a standalone executable, in which case configuration, profiles,
 // and the wiki packs sit next to the executable rather than next to the
 // source tree. Both cases resolve to the same answer here.

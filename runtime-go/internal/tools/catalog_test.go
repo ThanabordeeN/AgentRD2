@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// toolCategories is the category every tool in the Python ``ToolSpec`` carries.
-// ``describe()`` does not expose categories, so they are asserted separately.
+// toolCategories is the category every tool in the Python “ToolSpec“ carries.
+// “describe()“ does not expose categories, so they are asserted separately.
 var toolCategories = map[string]string{
 	"get_world_state":    "perception",
 	"grab_timeline":      "perception",

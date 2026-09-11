@@ -1,6 +1,6 @@
 // Package domain holds the canonical data structures shared by the runtime.
 //
-// It is a direct port of the Python ``runtime/schemas.py`` module, and the
+// It is a direct port of the Python “runtime/schemas.py“ module, and the
 // JSON shape of every type is intentionally identical: the timeline is a
 // shared, append-only JSONL store and the IPC protocol is a shared contract,
 // so both implementations must be able to read each other's output.
@@ -15,18 +15,18 @@ import (
 )
 
 // Timestamp returns a Unix timestamp with sub-second precision, matching
-// Python's ``time.time()``.
+// Python's “time.time()“.
 func Timestamp() float64 {
 	return float64(time.Now().UnixNano()) / 1e9
 }
 
 // NewEventID returns an identifier in the same shape as the Python runtime
-// (``evt_`` followed by 12 hex characters).
+// (“evt_“ followed by 12 hex characters).
 func NewEventID() string {
 	return "evt_" + RandomHex(12)
 }
 
-// NewActionID returns an ``act_``-prefixed identifier.
+// NewActionID returns an “act_“-prefixed identifier.
 func NewActionID() string {
 	return "act_" + RandomHex(12)
 }
@@ -50,8 +50,8 @@ func RandomHex(n int) string {
 }
 
 // CleanNone recursively drops nil values from JSON-like structures, matching
-// the Python helper of the same name. Python omits ``None`` keys entirely
-// rather than emitting ``null``, and the timeline files are shared.
+// the Python helper of the same name. Python omits “None“ keys entirely
+// rather than emitting “null“, and the timeline files are shared.
 func CleanNone(value any) any {
 	switch typed := value.(type) {
 	case nil:
@@ -81,7 +81,7 @@ func CleanNone(value any) any {
 }
 
 // CleanMap is CleanNone specialised for the string-keyed maps the runtime
-// passes around as event ``data``.
+// passes around as event “data“.
 func CleanMap(value map[string]any) map[string]any {
 	if value == nil {
 		return map[string]any{}
@@ -94,7 +94,7 @@ func CleanMap(value map[string]any) map[string]any {
 }
 
 // ClampImportance bounds an importance score to [0, 1], mirroring
-// ``Event.__post_init__``.
+// “Event.__post_init__“.
 func ClampImportance(value *float64) *float64 {
 	if value == nil {
 		return nil

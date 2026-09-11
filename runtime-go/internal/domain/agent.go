@@ -29,7 +29,7 @@ func NewAgentContext(npcID string) *AgentContext {
 	}
 }
 
-// ToMap mirrors ``AgentContext.to_dict``.
+// ToMap mirrors “AgentContext.to_dict“.
 func (c AgentContext) ToMap() map[string]any {
 	return map[string]any{
 		"npc_id":           c.NPCID,
@@ -74,7 +74,7 @@ type AgentSpeech struct {
 	Emotion string `json:"emotion,omitempty"`
 }
 
-// ToMap mirrors ``AgentSpeech.to_dict``.
+// ToMap mirrors “AgentSpeech.to_dict“.
 func (s AgentSpeech) ToMap() map[string]any {
 	payload := map[string]any{"text": s.Text}
 	if s.Target != "" {
@@ -92,7 +92,7 @@ type AgentAction struct {
 	Arguments map[string]any `json:"arguments"`
 }
 
-// ToMap mirrors ``AgentAction.to_dict``.
+// ToMap mirrors “AgentAction.to_dict“.
 func (a AgentAction) ToMap() map[string]any {
 	return map[string]any{"tool": a.Tool, "arguments": CleanMap(a.Arguments)}
 }
@@ -144,7 +144,7 @@ func (d AgentDecision) ToolNames() []string {
 	return names
 }
 
-// ToMap mirrors ``AgentDecision.to_dict``: ``internal`` always carries goal and
+// ToMap mirrors “AgentDecision.to_dict“: “internal“ always carries goal and
 // mood, and nil speech is dropped entirely.
 func (d AgentDecision) ToMap() map[string]any {
 	internal := map[string]any{}

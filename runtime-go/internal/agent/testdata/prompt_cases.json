@@ -1,0 +1,259 @@
+{
+  "dialogue_only": {
+    "available_tools": [
+      "say"
+    ],
+    "current_goal": null,
+    "current_mood": "busy",
+    "flags": {
+      "dialogue_only": true,
+      "thinking_mode": "disabled"
+    },
+    "npc_id": "npc_quest_giver",
+    "profile": {
+      "name": "Quest Farmer",
+      "npc_id": "npc_quest_giver",
+      "system_prompt": "   "
+    },
+    "quest_context": {},
+    "recent_events": [],
+    "wiki_context": [],
+    "world_state": {
+      "nearby_peds": [],
+      "player": {},
+      "self": {}
+    }
+  },
+  "full": {
+    "available_tools": [
+      "face",
+      "get_world_state",
+      "say",
+      "wander"
+    ],
+    "current_goal": "investigate the gunshot",
+    "current_mood": "alert",
+    "flags": {
+      "dialogue_only": true,
+      "ownership_state": "AI_ACTIVE",
+      "reason": "meaningful_event:GUNSHOT_HEARD",
+      "thinking_mode": "low",
+      "trigger_event": {
+        "data": {
+          "position": [
+            100,
+            200,
+            10
+          ]
+        },
+        "event_name": "GUNSHOT_HEARD",
+        "seq": 3
+      }
+    },
+    "npc_id": "npc_001",
+    "profile": {
+      "background": "Runs cattle on the prairie.",
+      "behavior_rules": [
+        "Never leave the herd."
+      ],
+      "fears": [
+        "fire"
+      ],
+      "goals": [
+        "Bring the cattle in before dark."
+      ],
+      "knowledge": [
+        "The auction is this evening."
+      ],
+      "name": "Elias Carter",
+      "npc_id": "npc_001",
+      "personality": {
+        "aggression": 0.2,
+        "courage": 0.35,
+        "curiosity": 0.5,
+        "patience": 0.6,
+        "sociability": 0.4
+      },
+      "region": "New Hanover",
+      "relationships": {
+        "player": "stranger"
+      },
+      "speech_style": "short, plain",
+      "system_prompt": "You are Elias Carter, a rancher outside Valentine.\nYou speak plainly.",
+      "wiki_topics": [
+        "Valentine",
+        "New Hanover"
+      ]
+    },
+    "quest_context": {
+      "current_objective": "Drive the cattle to the pens.",
+      "dialogue_guidelines": [
+        "Stay brief."
+      ],
+      "quest_id": "quest_valentine_livestock",
+      "title": "The Livestock Auction"
+    },
+    "recent_events": [
+      {
+        "data": {
+          "distance": 6.2,
+          "note": "café — naïve"
+        },
+        "entities": [
+          "player"
+        ],
+        "event_name": "PLAYER_APPROACHED",
+        "npc_id": "npc_001",
+        "seq": 3,
+        "tags": [
+          "player"
+        ],
+        "timestamp": 1712345670.125
+      },
+      {
+        "data": {
+          "text": "Hey there."
+        },
+        "entities": [
+          "player"
+        ],
+        "event_name": "PLAYER_SPOKE",
+        "npc_id": "npc_001",
+        "seq": 4,
+        "tags": [
+          "player",
+          "speech"
+        ],
+        "timestamp": 1712345671.0
+      }
+    ],
+    "retrieved_events": [
+      {
+        "data": {
+          "goal": "watch the herd"
+        },
+        "event_name": "GOAL_CREATED",
+        "seq": 1
+      }
+    ],
+    "wiki_context": [
+      {
+        "source": "Red Dead Wiki",
+        "summary": "A livestock town in New Hanover.",
+        "title": "Valentine"
+      }
+    ],
+    "world_state": {
+      "nearby_horses": [
+        {
+          "distance_m": 3.0,
+          "entity_id": "horse_01"
+        }
+      ],
+      "nearby_peds": [
+        {
+          "distance_m": 8.0,
+          "entity_id": "npc_002"
+        }
+      ],
+      "player": {
+        "armed": true,
+        "distance": 6.2,
+        "name": "Arthur"
+      },
+      "recent_game_events": [
+        {
+          "data": {
+            "position": [
+              100,
+              200,
+              10
+            ]
+          },
+          "event_name": "GUNSHOT_HEARD"
+        }
+      ],
+      "self": {
+        "health": 92.5,
+        "mood": "wary",
+        "position": [
+          12.5,
+          -300.25,
+          44.0
+        ]
+      },
+      "timestamp": 1712345678.5
+    }
+  },
+  "lore_only": {
+    "available_tools": [
+      "say"
+    ],
+    "current_goal": "keep the camp calm",
+    "current_mood": "thoughtful",
+    "flags": {
+      "dialogue_only": false
+    },
+    "npc_id": "npc_004",
+    "profile": {
+      "name": "npc_004",
+      "npc_id": "npc_004",
+      "wiki_character": "Dutch van der Linde"
+    },
+    "recent_events": [
+      {
+        "event_name": "NPC_SPOKE",
+        "seq": 1
+      }
+    ],
+    "retrieved_events": [
+      {
+        "event_name": "NPC_SPOKE",
+        "seq": 1
+      }
+    ],
+    "wiki_context": [
+      {
+        "kind": "character",
+        "source": "Red Dead Wiki",
+        "summary": "Leader of the van der Linde gang.",
+        "title": "Dutch van der Linde"
+      }
+    ],
+    "world_state": {
+      "location": {
+        "region": "New Hanover"
+      }
+    }
+  },
+  "minimal": {
+    "available_tools": [],
+    "flags": {},
+    "npc_id": "npc_002",
+    "profile": {},
+    "recent_events": [],
+    "world_state": {}
+  },
+  "quest_no_dialogue": {
+    "available_tools": [
+      "say",
+      "go_to"
+    ],
+    "current_goal": "help with the auction",
+    "current_mood": "neutral",
+    "flags": {},
+    "npc_id": "npc_003",
+    "profile": {
+      "name": "npc_003",
+      "npc_id": "npc_003"
+    },
+    "quest_context": {
+      "quest_id": "q1",
+      "sample_lines": [
+        "Auction's this evenin'."
+      ]
+    },
+    "recent_events": [],
+    "world_state": {}
+  }
+}

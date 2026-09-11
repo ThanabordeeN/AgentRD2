@@ -137,9 +137,11 @@ func LoadEnvFile(path string, override bool) (map[string]string, error) {
 // LoadEnv loads the project's env files, skipping any that do not exist.
 //
 // A nil paths argument selects DefaultEnvFiles, matching the Python
-// “load_env“ defaults. Later files win over earlier ones, and the real
-// environment always wins unless override is true. When a file cannot be read
-// the pairs applied so far are returned together with the error.
+// “load_env“ defaults. The real environment always wins unless override is
+// true; without override a key defined by an earlier file is already in the
+// environment, so the first file that defines it wins and with override the
+// last one does. When a file cannot be read the pairs applied so far are
+// returned together with the error.
 func LoadEnv(paths []string, override bool) (map[string]string, error) {
 	candidates := paths
 	if candidates == nil {

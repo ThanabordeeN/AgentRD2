@@ -12,12 +12,12 @@ type GameTime struct {
 	Minute int `json:"minute"`
 }
 
-// ToMap mirrors ``GameTime.to_dict``.
+// ToMap mirrors “GameTime.to_dict“.
 func (g GameTime) ToMap() map[string]any {
 	return map[string]any{"day": g.Day, "hour": g.Hour, "minute": g.Minute}
 }
 
-// GameTimeFromMap mirrors ``GameTime.from_dict``; a nil/empty map yields nil.
+// GameTimeFromMap mirrors “GameTime.from_dict“; a nil/empty map yields nil.
 func GameTimeFromMap(value map[string]any) *GameTime {
 	if len(value) == 0 {
 		return nil
@@ -35,7 +35,7 @@ type Location struct {
 	Position []float64 `json:"position,omitempty"`
 }
 
-// ToMap mirrors ``Location.to_dict`` (nil fields are dropped).
+// ToMap mirrors “Location.to_dict“ (nil fields are dropped).
 func (l Location) ToMap() map[string]any {
 	out := map[string]any{}
 	if l.Region != nil {
@@ -47,7 +47,7 @@ func (l Location) ToMap() map[string]any {
 	return out
 }
 
-// LocationFromMap mirrors ``Location.from_dict``.
+// LocationFromMap mirrors “Location.from_dict“.
 func LocationFromMap(value map[string]any) *Location {
 	if len(value) == 0 {
 		return nil
@@ -68,7 +68,7 @@ func LocationFromMap(value map[string]any) *Location {
 
 // Event is one immutable entry in an NPC's JSONL timeline.
 //
-// ``Data`` is deliberately free-form: the bridge and normalizer store
+// “Data“ is deliberately free-form: the bridge and normalizer store
 // observable facts, not interpretations.
 type Event struct {
 	Seq        int            `json:"seq"`
@@ -85,7 +85,7 @@ type Event struct {
 	Tags       []string       `json:"tags"`
 }
 
-// Validate applies the same invariants as ``Event.__post_init__``.
+// Validate applies the same invariants as “Event.__post_init__“.
 func (e *Event) Validate() error {
 	if e.EventName == "" {
 		return fmt.Errorf("event_name is required")
@@ -100,8 +100,8 @@ func (e *Event) Validate() error {
 	return nil
 }
 
-// ToMap mirrors ``Event.to_dict``: optional fields are omitted, never null,
-// and ``data`` is recursively stripped of nil values.
+// ToMap mirrors “Event.to_dict“: optional fields are omitted, never null,
+// and “data“ is recursively stripped of nil values.
 func (e Event) ToMap() map[string]any {
 	if e.Entities == nil {
 		e.Entities = []string{}
@@ -134,7 +134,7 @@ func (e Event) ToMap() map[string]any {
 	return payload
 }
 
-// EventFromMap mirrors ``Event.from_dict``.
+// EventFromMap mirrors “Event.from_dict“.
 func EventFromMap(value map[string]any) (Event, error) {
 	event := Event{
 		Seq:       IntFrom(value["seq"]),
@@ -173,7 +173,7 @@ func EventFromMap(value map[string]any) (Event, error) {
 	return event, nil
 }
 
-// NewEvent builds an event with generated defaults, mirroring ``new_event``.
+// NewEvent builds an event with generated defaults, mirroring “new_event“.
 type NewEventOptions struct {
 	Seq        int
 	EventName  string

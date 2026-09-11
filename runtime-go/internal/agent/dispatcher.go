@@ -9,7 +9,7 @@ import (
 
 // transientTools are short/soft overlays. They must not block idle planning
 // while the runtime waits for a bridge action_result. It mirrors
-// ``RuntimeActionDispatcher.TRANSIENT_TOOLS`` in the Python runtime.
+// “RuntimeActionDispatcher.TRANSIENT_TOOLS“ in the Python runtime.
 var transientTools = map[string]bool{
 	"think":           true,
 	"gesture":         true,
@@ -130,7 +130,7 @@ func (d *RuntimeActionDispatcher) FindPending(tool string) (domain.ActionRequest
 }
 
 // PendingNPCIDs returns the set of NPC ids with at least one pending action.
-// The Python runtime derives the same set from ``dispatcher.pending.values()``.
+// The Python runtime derives the same set from “dispatcher.pending.values()“.
 func (d *RuntimeActionDispatcher) PendingNPCIDs() map[string]bool {
 	d.mu.Lock()
 	defer d.mu.Unlock()

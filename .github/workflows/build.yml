@@ -59,6 +59,10 @@ jobs:
           go-version: "1.27.x"
           cache-dependency-path: runtime-go/go.sum
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Formatting
         working-directory: runtime-go
         shell: bash
@@ -76,9 +80,12 @@ jobs:
         working-directory: runtime-go
         run: go test ./...
 
-      - name: Parity against the shared scenarios
+      - name: Go scenario suite
         working-directory: runtime-go
-        run: go run ./cmd/rdr2-npc --scenarios ../scenarios --json
+        run: go run ./cmd/rdr2-npc --scenarios ../scenarios
+
+      - name: Parity against the Python runtime
+        run: python scripts/compare_runtimes.py
 
       - name: Build the standalone Windows runtime
         if: runner.os == 'Windows'

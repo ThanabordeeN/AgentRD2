@@ -40,20 +40,20 @@ func main() {
 }
 
 type options struct {
-	host          string
-	port          int
-	settingsPath  string
-	backendName   string
-	model         string
-	apiBase       string
-	apiKey        string
-	apiKeyEnv     string
-	thinkMode     string
-	scenariosDir  string
-	asJSON        bool
-	check         bool
-	showVersion   bool
-	verbose       bool
+	host         string
+	port         int
+	settingsPath string
+	backendName  string
+	model        string
+	apiBase      string
+	apiKey       string
+	apiKeyEnv    string
+	thinkMode    string
+	scenariosDir string
+	asJSON       bool
+	check        bool
+	showVersion  bool
+	verbose      bool
 }
 
 func run(args []string) int {

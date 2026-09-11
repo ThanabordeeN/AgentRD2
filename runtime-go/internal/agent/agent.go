@@ -3,14 +3,13 @@
 // configured backend when ownership changes, validates the model's high-level
 // actions, and sends them to the bridge.
 //
-// It is a faithful port of ``runtime/agent/npc_agent.py`` and
-// ``runtime/agent/instructions.py``: rules, thresholds, reason strings, event
+// It is a faithful port of “runtime/agent/npc_agent.py“ and
+// “runtime/agent/instructions.py“: rules, thresholds, reason strings, event
 // names, ordering decisions, and guardrails follow the Python implementation.
 package agent
 
 import (
 	"fmt"
-	"sort"
 	"sync"
 	"time"
 
@@ -26,7 +25,7 @@ import (
 )
 
 // AgentRuntimeState is the per-NPC runtime bookkeeping kept between decision
-// turns. It mirrors the Python ``AgentRuntimeState`` dataclass.
+// turns. It mirrors the Python “AgentRuntimeState“ dataclass.
 type AgentRuntimeState struct {
 	NPCID              string
 	CurrentGoal        *string
@@ -81,7 +80,7 @@ type Options struct {
 	Quests *lore.QuestStore
 }
 
-// Runtime ports the Python ``NpcAgentRuntime``.
+// Runtime ports the Python “NpcAgentRuntime“.
 //
 // All exported methods are safe for concurrent use: the IPC server calls
 // HandleMessage from several connections at once, so shared maps are guarded
@@ -89,20 +88,21 @@ type Options struct {
 type Runtime struct {
 	mu sync.Mutex
 
-	settings   config.Settings
-	timeline   *timeline.Store
-	world      *state.WorldStore
-	profiles   *config.ProfileStore
-	ownership  *state.Manager
+	settings    config.Settings
+	timeline    *timeline.Store
+	world       *state.WorldStore
+	profiles    *config.ProfileStore
+	ownership   *state.Manager
 	eligibility *state.Gate
-	backend    backend.Backend
-	registry   *tools.Registry
-	dispatcher *RuntimeActionDispatcher
-	lore       *lore.Store
-	quests     *lore.QuestStore
-	normalizer *events.Normalizer
+	backend     backend.Backend
+	registry    *tools.Registry
+	dispatcher  *RuntimeActionDispatcher
+	lore        *lore.Store
+	quests      *lore.QuestStore
+	normalizer  *events.Normalizer
 
 	agentState         map[string]*AgentRuntimeState
+	agentOrder         []string
 	lastPedScan        map[string]domain.PedSnapshot
 	lastGlobalSpeechAt float64
 	deferredOrder      []string
@@ -113,7 +113,7 @@ type Runtime struct {
 }
 
 // NewRuntime builds a runtime, filling in the same defaults as the Python
-// ``NpcAgentRuntime`` constructor.
+// “NpcAgentRuntime“ constructor.
 func NewRuntime(opts Options) (*Runtime, error) {
 	settings := config.DefaultSettings()
 	if opts.Settings != nil {
@@ -272,35 +272,22 @@ func (r *Runtime) agentStateLocked(npcID string) *AgentRuntimeState {
 		}
 	}
 	r.agentState[npcID] = created
+	r.agentOrder = append(r.agentOrder, npcID)
 	return created
 }
 
-// agentStateIDs returns the tracked NPC ids in deterministic order.
+// agentStateIDsLocked returns the tracked NPC ids in insertion order, matching
+// Python's “agent_state“ dict order.
 // The caller must hold r.mu.
 func (r *Runtime) agentStateIDsLocked() []string {
-	ids := make([]string, 0, len(r.agentState))
-	for npcID := range r.agentState {
-		ids = append(ids, npcID)
-	}
-	sort.Strings(ids)
+	ids := make([]string, len(r.agentOrder))
+	copy(ids, r.agentOrder)
 	return ids
 }
 
-// nextSeq mirrors ``TimelineStore.next_seq``: one past the highest recorded
-// sequence number for the NPC (the frozen timeline API does not expose
-// next_seq directly).
+// nextSeq mirrors “TimelineStore.next_seq“.
 func (r *Runtime) nextSeq(npcID string) (int, error) {
-	recent, err := r.timeline.RecentEvents(npcID, 1)
-	if err != nil {
-		return 0, err
-	}
-	highest := 0
-	for _, event := range recent {
-		if event.Seq > highest {
-			highest = event.Seq
-		}
-	}
-	return highest + 1, nil
+	return r.timeline.NextSeq(npcID), nil
 }
 
 // appendEvent records one timeline fact.
@@ -325,7 +312,7 @@ func appendOptionsFromEvent(event domain.Event) timeline.AppendOptions {
 }
 
 // npcFromPending resolves an NPC id from a pending action request id, matching
-// ``_npc_from_pending``.
+// “_npc_from_pending“.
 func (r *Runtime) npcFromPending(raw map[string]any) string {
 	requestID := domain.StringFrom(raw["request_id"])
 	if requestID == "" {

@@ -1,7 +1,7 @@
 // Package scenarios replays the shared scenario JSON files against the Go
-// runtime. It is a port of the Python ``scenario_runner.py`` and exists so the
+// runtime. It is a port of the Python “scenario_runner.py“ and exists so the
 // two implementations can be held to the same behavioural contract: both read
-// the same files from ``scenarios/`` and assert the same events.
+// the same files from “scenarios/“ and assert the same events.
 package scenarios
 
 import (
@@ -81,8 +81,8 @@ type countingBackend struct {
 	calls int64
 }
 
-func (c *countingBackend) Name() string                { return c.inner.Name() }
-func (c *countingBackend) SupportsWaitGestures() bool  { return c.inner.SupportsWaitGestures() }
+func (c *countingBackend) Name() string               { return c.inner.Name() }
+func (c *countingBackend) SupportsWaitGestures() bool { return c.inner.SupportsWaitGestures() }
 func (c *countingBackend) Calls() int                 { return int(atomic.LoadInt64(&c.calls)) }
 
 func (c *countingBackend) Decide(ctx context.Context, agentCtx *domain.AgentContext) (*domain.AgentDecision, error) {
@@ -196,7 +196,9 @@ func RunFile(path string, opts Options) Result {
 			if saveAs == "" {
 				saveAs = toolName
 			}
-			saved[saveAs] = toolResult.ToMap()
+			// The Python runner saves the raw handler return value; the Go
+			// registry wraps it in a ToolResult, so unwrap the payload again.
+			saved[saveAs] = unwrapToolPayload(toolResult)
 		case step["pending_action_result"] != nil:
 			pending := domain.MapFrom(step["pending_action_result"])
 			toolName := domain.StringFrom(pending["tool"])
@@ -421,31 +423,44 @@ func evaluate(
 	return failures
 }
 
-// extractSavedEventNames pulls event names out of a saved `grab_timeline`
-// tool result, which may be a list of events or a wrapper object.
-func extractSavedEventNames(payload any) []string {
-	switch typed := payload.(type) {
-	case []any:
-		names := make([]string, 0, len(typed))
-		for _, item := range typed {
-			if object, ok := item.(map[string]any); ok {
-				names = append(names, domain.StringFrom(object["event_name"]))
-			}
-		}
-		return names
-	case map[string]any:
-		for _, key := range []string{"events", "timeline", "result", "items"} {
-			if inner, ok := typed[key]; ok {
-				if names := extractSavedEventNames(inner); len(names) > 0 {
-					return names
-				}
-			}
-		}
-		if name := domain.StringFrom(typed["event_name"]); name != "" {
-			return []string{name}
-		}
+// unwrapToolPayload returns the handler's own return value, matching what the
+// Python scenario runner stores for a `tool_call` step. The Go registry returns
+// a domain.ToolResult that carries the payload under Detail["result"].
+func unwrapToolPayload(result domain.ToolResult) any {
+	if payload, ok := result.Detail["result"]; ok {
+		return payload
 	}
-	return nil
+	return result.ToMap()
+}
+
+// extractSavedEventNames mirrors the Python `_extract_saved_event_names`: the
+// payload must be an object with an "events" list, and each entry contributes
+// its event_name.
+func extractSavedEventNames(payload any) []string {
+	object, ok := payload.(map[string]any)
+	if !ok {
+		return nil
+	}
+	rawEvents, ok := object["events"]
+	if !ok {
+		return nil
+	}
+	names := []string{}
+	switch events := rawEvents.(type) {
+	case []any:
+		for _, item := range events {
+			if entry, ok := item.(map[string]any); ok {
+				names = append(names, domain.StringFrom(entry["event_name"]))
+			}
+		}
+	case []map[string]any:
+		for _, entry := range events {
+			names = append(names, domain.StringFrom(entry["event_name"]))
+		}
+	default:
+		return nil
+	}
+	return names
 }
 
 func countOf(values []string, want string) int {

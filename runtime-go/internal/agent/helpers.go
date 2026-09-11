@@ -7,7 +7,7 @@ import (
 	"unicode"
 )
 
-// coerceFloat mirrors Python's ``float(value)`` for the JSON-shaped values the
+// coerceFloat mirrors Python's “float(value)“ for the JSON-shaped values the
 // runtime handles: numbers, numeric strings, and booleans convert; anything
 // else reports false so callers can apply the Python default.
 func coerceFloat(value any) (float64, bool) {
@@ -73,7 +73,7 @@ func isTruthy(value any) bool {
 	return true
 }
 
-// pyStr mirrors Python's ``str(value)`` for the scalar JSON values that reach
+// pyStr mirrors Python's “str(value)“ for the scalar JSON values that reach
 // the runtime's error messages.
 func pyStr(value any) string {
 	switch typed := value.(type) {
@@ -100,7 +100,7 @@ func pyStr(value any) string {
 	}
 }
 
-// pyReprString mirrors Python's ``repr`` for the short strings that appear in
+// pyReprString mirrors Python's “repr“ for the short strings that appear in
 // error messages (single quotes unless the value contains one and no double
 // quote).
 func pyReprString(value string) string {

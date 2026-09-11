@@ -12,12 +12,12 @@ import (
 )
 
 // HandleMessage is the bridge message entry point. It ports
-// ``NpcAgentRuntime.handle_message`` including its dispatch table and exact
+// “NpcAgentRuntime.handle_message“ including its dispatch table and exact
 // reply payloads.
 //
 // A returned error means the runtime failed internally (for example the
 // timeline could not be written); validation problems come back as
-// ``{"type": "error", "reason": ...}`` payloads, exactly like Python.
+// “{"type": "error", "reason": ...}“ payloads, exactly like Python.
 func (r *Runtime) HandleMessage(ctx context.Context, raw map[string]any) (map[string]any, error) {
 	ctx = nonNilContext(ctx)
 	r.mu.Lock()
@@ -76,11 +76,11 @@ func (r *Runtime) maybeReleaseFromWorldState(ctx context.Context, worldState dom
 		return nil
 	}
 	transition := r.ownership.UpdateFromScan(state.ScanUpdate{
-		NPCID:             worldState.NPCID,
-		DistanceM:         distanceM,
-		Eligible:          true,
+		NPCID:              worldState.NPCID,
+		DistanceM:          distanceM,
+		Eligible:           true,
 		CandidateDistanceM: candidateDistance,
-		AwareDistanceM:    r.settings.Activation.AwareDistanceM,
+		AwareDistanceM:     r.settings.Activation.AwareDistanceM,
 	})
 	if transition == nil {
 		return nil
@@ -95,13 +95,9 @@ func (r *Runtime) handlePedScan(ctx context.Context, raw map[string]any) (map[st
 	processed := 0
 	transitions := []map[string]any{}
 
-	peds, ok := raw["peds"].([]any)
-	if !ok {
-		if raw["peds"] == nil {
-			peds = []any{}
-		} else {
-			return errorReply("ped_scan.peds must be an array"), nil
-		}
+	peds, valid := anySlice(raw["peds"])
+	if !valid {
+		return errorReply("ped_scan.peds must be an array"), nil
 	}
 	trackedLimit := r.settings.Scheduler.NearbyTrackedLimit
 	sort.SliceStable(peds, func(left, right int) bool {
@@ -128,14 +124,12 @@ func (r *Runtime) handlePedScan(ctx context.Context, raw map[string]any) (map[st
 		if ped.DistanceM != nil {
 			distance = *ped.DistanceM
 		}
-		questTransition, handled, err := r.handleQuestDialoguePed(ctx, ped, distance, candidateDistance, awareDistance)
+		questTransition, err := r.handleQuestDialoguePed(ctx, ped, distance, candidateDistance, awareDistance)
 		if err != nil {
 			return nil, err
 		}
-		if handled {
-			if questTransition != nil {
-				transitions = append(transitions, questTransition)
-			}
+		if questTransition != nil {
+			transitions = append(transitions, questTransition)
 			processed++
 			continue
 		}
@@ -148,7 +142,7 @@ func (r *Runtime) handlePedScan(ctx context.Context, raw map[string]any) (map[st
 		transition := r.ownership.UpdateFromScan(state.ScanUpdate{
 			NPCID:              ped.EntityID,
 			DistanceM:          distance,
-			Eligible:           eligibility.Allowed,
+			Eligible:           eligibility.Eligible,
 			CandidateDistanceM: candidateDistance,
 			AwareDistanceM:     awareDistance,
 		})
@@ -158,7 +152,7 @@ func (r *Runtime) handlePedScan(ctx context.Context, raw map[string]any) (map[st
 				return nil, err
 			}
 			transitions = append(transitions, recorded)
-			if transition.ToState == ownershipAIActive {
+			if transition.To == ownershipAIActive {
 				if _, err := r.scheduleReasoning(ctx, ped.EntityID, "ped_scan_activation", nil); err != nil {
 					return nil, err
 				}
@@ -342,9 +336,17 @@ func (r *Runtime) handleStorySafety(ctx context.Context, raw map[string]any) (ma
 	for _, target := range targets {
 		var transition *state.Transition
 		if active {
-			transition = r.ownership.Suspend(target, domain.StringFrom(raw["reason"]))
+			reason := "story_safety"
+			if value, present := raw["reason"]; present {
+				reason = domain.StringFrom(value)
+			}
+			transition = r.ownership.Suspend(target, reason)
 		} else {
-			transition = r.ownership.Resume(target, domain.StringFrom(raw["reason"]))
+			reason := "story_safety_cleared"
+			if value, present := raw["reason"]; present {
+				reason = domain.StringFrom(value)
+			}
+			transition = r.ownership.Resume(target, reason)
 		}
 		if transition != nil {
 			recorded, err := r.recordTransition(ctx, transition, nil, nil)
@@ -358,7 +360,7 @@ func (r *Runtime) handleStorySafety(ctx context.Context, raw map[string]any) (ma
 }
 
 // worldRecentEventLimit mirrors WorldStateStore.apply_event's default
-// ``max_recent``.
+// “max_recent“.
 const worldRecentEventLimit = 50
 
 func errorReply(reason string) map[string]any {
@@ -373,31 +375,42 @@ func nonNilContext(ctx context.Context) context.Context {
 }
 
 // pedDistanceKey mirrors the Python sort key:
-// ``float((p or {}).get("distance_m") or 0.0) if isinstance(p, dict) else 0.0``.
+// “float((p or {}).get("distance_m") or 0.0) if isinstance(p, dict) else 0.0“.
 func pedDistanceKey(payload any) float64 {
 	typed, ok := payload.(map[string]any)
 	if !ok {
 		return 0
 	}
-	value, present := typed["distance_m"]
-	if !present || value == nil {
-		return 0
-	}
-	distance, ok := coerceFloat(value)
+	distance, ok := coerceFloat(typed["distance_m"])
 	if !ok {
 		return 0
 	}
 	return distance
 }
 
-// eligibilityReasons adapts the frozen gate Result to the Python
-// ``EligibilityResult.reasons`` list used in transition events.
+// anySlice mirrors Python's “raw.get("peds") or []“ followed by the
+// “isinstance(peds, list)“ check.
+func anySlice(value any) ([]any, bool) {
+	switch typed := value.(type) {
+	case nil:
+		return nil, true
+	case []any:
+		return typed, true
+	case []map[string]any:
+		converted := make([]any, 0, len(typed))
+		for _, item := range typed {
+			converted = append(converted, item)
+		}
+		return converted, true
+	case string:
+		if typed == "" {
+			return nil, true
+		}
+	}
+	return nil, false
+}
+
+// eligibilityReasons mirrors “EligibilityResult.reasons“.
 func eligibilityReasons(result state.Result) []string {
-	if result.Reason != "" {
-		return []string{result.Reason}
-	}
-	if raw, ok := result.Detail["reasons"]; ok {
-		return domain.StringsFrom(raw)
-	}
-	return nil
+	return result.Reasons()
 }

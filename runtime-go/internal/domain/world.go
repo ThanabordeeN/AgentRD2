@@ -12,7 +12,7 @@ type WorldState struct {
 	Raw              map[string]any   `json:"raw"`
 }
 
-// ToMap mirrors ``WorldState.to_dict`` (note the ``self`` key name).
+// ToMap mirrors “WorldState.to_dict“ (note the “self“ key name).
 func (w WorldState) ToMap() map[string]any {
 	return map[string]any{
 		"self":               nonNilMap(w.SelfState),
@@ -24,7 +24,7 @@ func (w WorldState) ToMap() map[string]any {
 	}
 }
 
-// WorldStateFromBridgePayload mirrors ``WorldState.from_bridge_payload``.
+// WorldStateFromBridgePayload mirrors “WorldState.from_bridge_payload“.
 func WorldStateFromBridgePayload(npcID string, payload map[string]any) WorldState {
 	state := MapFrom(payload["state"])
 	timestamp := FloatFrom(payload["timestamp"])
@@ -87,7 +87,7 @@ func (p PedSnapshot) ToMap() map[string]any {
 	}
 }
 
-// PedSnapshotFromMap mirrors ``PedSnapshot.from_dict``: unknown keys are
+// PedSnapshotFromMap mirrors “PedSnapshot.from_dict“: unknown keys are
 // ignored rather than rejected.
 func PedSnapshotFromMap(value map[string]any) PedSnapshot {
 	return PedSnapshot{

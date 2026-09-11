@@ -1,0 +1,56 @@
+{
+  "floats": {
+    "expected": "[\n  0.0,\n  -0.0,\n  1.0,\n  2.5,\n  0.0001,\n  1e-05,\n  1000000000000000.0,\n  1e+16,\n  1.5e+16,\n  123.456,\n  -3.25,\n  1e+100,\n  5e-324,\n  1.7976931348623157e+308\n]",
+    "value": [
+      0.0,
+      -0.0,
+      1.0,
+      2.5,
+      0.0001,
+      1e-05,
+      1000000000000000.0,
+      1e+16,
+      1.5e+16,
+      123.456,
+      -3.25,
+      1e+100,
+      5e-324,
+      1.7976931348623157e+308
+    ]
+  },
+  "ints": {
+    "expected": "{\n  \"a\": 0,\n  \"b\": -7,\n  \"c\": 1000000000000000000\n}",
+    "value": {
+      "a": 0,
+      "b": -7,
+      "c": 1000000000000000000
+    }
+  },
+  "nested": {
+    "expected": "{\n  \"a\": {\n    \"empty_list\": [],\n    \"empty_obj\": {}\n  },\n  \"z\": [\n    1,\n    {\n      \"b\": [\n        true,\n        false,\n        null\n      ]\n    }\n  ]\n}",
+    "value": {
+      "a": {
+        "empty_list": [],
+        "empty_obj": {}
+      },
+      "z": [
+        1,
+        {
+          "b": [
+            true,
+            false,
+            null
+          ]
+        }
+      ]
+    }
+  },
+  "strings": {
+    "expected": "{\n  \"escapes\": \"line\\nbreak\\ttab \\\"quote\\\" back\\\\slash \\u0001\",\n  \"plain\": \"hello\",\n  \"unicode\": \"café — 你好 🤠\"\n}",
+    "value": {
+      "escapes": "line\nbreak\ttab \"quote\" back\\slash \u0001",
+      "plain": "hello",
+      "unicode": "café — 你好 🤠"
+    }
+  }
+}

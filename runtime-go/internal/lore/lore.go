@@ -287,12 +287,19 @@ func (s *Store) ContextForProfileWithWorld(profile, worldState map[string]any, l
 		seen[title] = true
 		results = append(results, trimSummary(page, maxChars))
 	}
-	if len(results) == 0 && (len(s.pageOrder) > 0 || len(s.characterOrder) > 0) {
-		first := s.pages[s.pageOrder[0]]
-		if first == nil {
+	if len(results) == 0 {
+		// Mirror ``next(iter(self.pages.values()), None) or
+		// next(iter(self.characters.values()))``: the first world page, else
+		// the first character.
+		var first map[string]any
+		if len(s.pageOrder) > 0 {
+			first = s.pages[s.pageOrder[0]]
+		} else if len(s.characterOrder) > 0 {
 			first = s.characters[s.characterOrder[0]]
 		}
-		results = append(results, trimSummary(first, maxChars))
+		if first != nil {
+			results = append(results, trimSummary(first, maxChars))
+		}
 	}
 	return results
 }

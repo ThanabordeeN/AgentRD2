@@ -15,7 +15,7 @@ import (
 type RuleOptions struct {
 	// SilenceProbability is how likely the NPC is to stay quiet instead of
 	// making small talk. It is clamped to [0, 1], matching Python's
-	// ``max(0.0, min(1.0, silence_probability))``.
+	// max(0.0, min(1.0, silence_probability)).
 	SilenceProbability float64
 
 	// Seed seeds the backend's pseudo-random stream so that two backends
@@ -23,7 +23,7 @@ type RuleOptions struct {
 	// identically.
 	//
 	// Python's RuleBasedAgentBackend keys its pass-by silence decision off
-	// ``hash((seed, npc_id, len(recent_events)))``; Python salts string
+	// hash((seed, npc_id, len(recent_events))); Python salts string
 	// hashes per process, so that key is not reproducible even between two
 	// Python runs. The Go port replaces it with a seeded per-backend stream,
 	// which makes the same behaviour reproducible here.
@@ -32,7 +32,7 @@ type RuleOptions struct {
 
 // RuleBackend is the deterministic offline backend used by tests, the dry-run
 // demo and the scenario runner. It is a faithful port of Python's
-// “RuleBasedAgentBackend“: it never calls a model, so it answers
+// RuleBasedAgentBackend: it never calls a model, so it answers
 // instantaneously and SupportsWaitGestures reports false.
 //
 // A RuleBackend is safe for concurrent use. Its only mutable state is the
@@ -63,9 +63,9 @@ func (b *RuleBackend) Name() string { return "rule" }
 func (b *RuleBackend) SupportsWaitGestures() bool { return false }
 
 // Decide implements Backend. It reproduces the branch ladder of Python's
-// “RuleBasedAgentBackend.decide“: threats first, then friendly events, then
-// the single newest event (“flags["trigger_event"]“ when the runtime
-// supplied one, otherwise the last entry of “recent_events“).
+// RuleBasedAgentBackend.decide: threats first, then friendly events, then
+// the single newest event (flags["trigger_event"] when the runtime
+// supplied one, otherwise the last entry of recent_events).
 //
 // Decide performs no I/O and returns as soon as it has looked at the context;
 // ctx is only checked for an already-cancelled caller. A nil agentCtx is
@@ -128,7 +128,11 @@ func (b *RuleBackend) Decide(ctx context.Context, agentCtx *domain.AgentContext)
 
 	if _, ok := ruleFindRecent(recent, ruleIsFriendlyEvent); ok {
 		mood = "warm"
-		speech = &domain.AgentSpeech{Text: "Good to see a friendly face.", Target: "player", Emotion: "friendly"}
+		speech = &domain.AgentSpeech{
+			Text:    "Good to see a friendly face.",
+			Target:  "player",
+			Emotion: "friendly",
+		}
 		actions = append(actions, rulePlayerAction("look_at"))
 		return ruleDecision(goal, mood, speech, actions), nil
 	}
@@ -195,8 +199,8 @@ func (b *RuleBackend) Decide(ctx context.Context, agentCtx *domain.AgentContext)
 	return ruleDecision(goal, mood, speech, actions), nil
 }
 
-// shouldSpeak mirrors “RuleBasedAgentBackend._should_speak“. Only the
-// pass-by path (“direct == false“) consumes a random draw, and only when the
+// shouldSpeak mirrors RuleBasedAgentBackend._should_speak. Only the
+// pass-by path (direct == false) consumes a random draw, and only when the
 // silence probability is strictly positive, so a backend configured with 0.0
 // never advances its stream.
 func (b *RuleBackend) shouldSpeak(direct bool) bool {
@@ -217,10 +221,10 @@ func (b *RuleBackend) roll() int {
 	return b.rng.Intn(ruleRollScale)
 }
 
-// ruleRollScale mirrors the “% 1000“ modulus in the Python implementation.
+// ruleRollScale mirrors the % 1000 modulus in the Python implementation.
 const ruleRollScale = 1000
 
-// ruleReplyTo mirrors “RuleBasedAgentBackend._reply_to“. The boolean result
+// ruleReplyTo mirrors RuleBasedAgentBackend._reply_to. The boolean result
 // reports whether the NPC has something to say; the Python original returns
 // None for an empty transcript.
 func ruleReplyTo(transcript string) (string, bool) {
@@ -250,7 +254,7 @@ func ruleReplyTo(transcript string) (string, bool) {
 	}
 }
 
-// ruleFindRecent mirrors “_find_recent“: scan newest-first for the first
+// ruleFindRecent mirrors _find_recent: scan newest-first for the first
 // event whose name satisfies match.
 func ruleFindRecent(recent []map[string]any, match func(string) bool) (map[string]any, bool) {
 	for index := len(recent) - 1; index >= 0; index-- {
@@ -261,7 +265,7 @@ func ruleFindRecent(recent []map[string]any, match func(string) bool) (map[strin
 	return nil, false
 }
 
-// ruleIsThreatEvent mirrors “RuleBasedAgentBackend.THREAT_EVENTS“.
+// ruleIsThreatEvent mirrors RuleBasedAgentBackend.THREAT_EVENTS.
 func ruleIsThreatEvent(name string) bool {
 	switch name {
 	case "PLAYER_THREATENED_NPC", "PLAYER_ATTACKED_NPC", "NPC_DAMAGED":
@@ -271,7 +275,7 @@ func ruleIsThreatEvent(name string) bool {
 	}
 }
 
-// ruleIsFriendlyEvent mirrors “RuleBasedAgentBackend.FRIENDLY_EVENTS“.
+// ruleIsFriendlyEvent mirrors RuleBasedAgentBackend.FRIENDLY_EVENTS.
 func ruleIsFriendlyEvent(name string) bool {
 	return name == "PLAYER_HELPED_NPC"
 }
@@ -282,7 +286,7 @@ func ruleEventName(event map[string]any) string {
 	return name
 }
 
-// ruleTrait mirrors “personality.get(key, fallback)“: the fallback applies
+// ruleTrait mirrors personality.get(key, fallback): the fallback applies
 // only when the key is absent, so an explicit 0.0 is preserved.
 func ruleTrait(personality map[string]any, key string, fallback float64) float64 {
 	value, ok := personality[key]
@@ -305,13 +309,13 @@ func ruleGoalCopy(goal *string) *string {
 // ruleGoal returns a pointer to text.
 func ruleGoal(text string) *string { return &text }
 
-// rulePlayerAction builds the “{"entity": "player"}“ action the Python
+// rulePlayerAction builds the {"entity": "player"} action the Python
 // backend emits for look_at and flee_from.
 func rulePlayerAction(tool string) domain.AgentAction {
 	return domain.AgentAction{Tool: tool, Arguments: map[string]any{"entity": "player"}}
 }
 
-// ruleDecision assembles a decision the way “AgentDecision(goal=..., ...)“
+// ruleDecision assembles a decision the way AgentDecision(goal=..., ...)
 // does: mood is always present, goal is dropped when the context had none,
 // and a nil speech means silence.
 func ruleDecision(
@@ -331,7 +335,7 @@ func ruleDecision(
 }
 
 // ruleTruthy mirrors Python truthiness for the JSON-ish values a data field
-// can hold (“if courage >= 0.55 and position“).
+// can hold (if courage >= 0.55 and position).
 func ruleTruthy(value any) bool {
 	switch typed := value.(type) {
 	case nil:
@@ -359,8 +363,8 @@ func ruleTruthy(value any) bool {
 	}
 }
 
-// ruleText mirrors Python's “str(value)“ for the scalar JSON values a
-// timeline “data“ field can hold: a present-but-null text stringifies to
+// ruleText mirrors Python's str(value) for the scalar JSON values a
+// timeline data field can hold: a present-but-null text stringifies to
 // "None" in Python, which is non-empty and therefore still earns a reply.
 // Non-scalar values fall back to the runtime's coercion.
 func ruleText(value any) string {

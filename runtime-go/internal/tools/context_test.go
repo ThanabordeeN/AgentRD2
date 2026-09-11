@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/domain"
+	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/lore"
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/state"
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/timeline"
 )
@@ -14,6 +15,7 @@ import (
 var (
 	_ WorldReader    = (*state.WorldStore)(nil)
 	_ TimelineReader = (*timeline.Store)(nil)
+	_ LoreReader     = (*lore.Store)(nil)
 )
 
 func TestDispatchActionBuildsActionRequest(t *testing.T) {

@@ -10,11 +10,25 @@ import (
 	"strings"
 
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/domain"
+	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/tools"
 )
 
+// DescribeTools mirrors “ToolRegistry.describe“: the model-facing catalog
+// (name, description, parameters) in sorted name order.
+//
+// The Python prompt builder does not call it, but the ADK backend does when it
+// exposes the tool catalog to the model, so it is exported alongside
+// BuildAgentPrompt for the wiring layer.
+func DescribeTools(registry *tools.Registry) []map[string]any {
+	if registry == nil {
+		return []map[string]any{}
+	}
+	return registry.Describe()
+}
+
 // NPCInstruction is the agent prompt contract from the specification
-// (section 46). It mirrors ``NPC_INSTRUCTION`` in
-// ``runtime/agent/instructions.py`` exactly.
+// (section 46). It mirrors “NPC_INSTRUCTION“ in
+// “runtime/agent/instructions.py“ exactly.
 const NPCInstruction = `You are a person living in the Red Dead Redemption 2 world.
 The player is another person. You do not exist to assist the player.
 You perceive only information supplied by the game state, timeline,
@@ -33,7 +47,7 @@ high-level tools.`
 // BuildAgentPrompt renders the compact reasoning context described in
 // specification section 14.
 //
-// It is a faithful port of ``build_agent_prompt``: the same sections appear in
+// It is a faithful port of “build_agent_prompt“: the same sections appear in
 // the same order and are omitted under the same conditions, and values are
 // rendered with a Python-compatible JSON encoder so the emitted text is
 // byte-comparable with the Python runtime's prompt.
@@ -45,11 +59,11 @@ func BuildAgentPrompt(ctx *domain.AgentContext) string {
 
 	profile := domain.MapFrom(context["profile"])
 	world := domain.MapFrom(context["world_state"])
-	recent := domain.MapsFrom(context["recent_events"])
-	retrieved := domain.MapsFrom(context["retrieved_events"])
-	wikiContext := domain.MapsFrom(context["wiki_context"])
+	recent := mapsOf(context["recent_events"])
+	retrieved := mapsOf(context["retrieved_events"])
+	wikiContext := mapsOf(context["wiki_context"])
 	questContext := domain.MapFrom(context["quest_context"])
-	tools := domain.StringsFrom(context["available_tools"])
+	tools := stringsOf(context["available_tools"])
 	flags := domain.MapFrom(context["flags"])
 	mood := domain.StringFrom(context["current_mood"])
 	currentGoal := context["current_goal"]
@@ -147,11 +161,54 @@ func BuildAgentPrompt(ctx *domain.AgentContext) string {
 	return strings.Join(lines, "\n")
 }
 
-// prettyJSON mirrors Python's ``json.dumps(value, ensure_ascii=False,
-// indent=2, sort_keys=True)``: two-space indentation, object keys sorted by
+// mapsOf normalizes the several slice shapes an AgentContext can carry after
+// “ToMap“ (which produces []map[string]any) or after a raw map is passed in.
+func mapsOf(value any) []map[string]any {
+	switch typed := value.(type) {
+	case nil:
+		return nil
+	case []map[string]any:
+		return typed
+	case []any:
+		return domain.MapsFrom(typed)
+	}
+	reflected := reflect.ValueOf(value)
+	if reflected.Kind() != reflect.Slice && reflected.Kind() != reflect.Array {
+		return nil
+	}
+	out := make([]map[string]any, 0, reflected.Len())
+	for index := 0; index < reflected.Len(); index++ {
+		out = append(out, domain.MapFrom(reflected.Index(index).Interface()))
+	}
+	return out
+}
+
+// stringsOf normalizes []string and []any tool lists.
+func stringsOf(value any) []string {
+	switch typed := value.(type) {
+	case nil:
+		return nil
+	case []string:
+		return typed
+	case []any:
+		return domain.StringsFrom(typed)
+	}
+	reflected := reflect.ValueOf(value)
+	if reflected.Kind() != reflect.Slice && reflected.Kind() != reflect.Array {
+		return nil
+	}
+	out := make([]string, 0, reflected.Len())
+	for index := 0; index < reflected.Len(); index++ {
+		out = append(out, domain.StringFrom(reflected.Index(index).Interface()))
+	}
+	return out
+}
+
+// prettyJSON mirrors Python's “json.dumps(value, ensure_ascii=False,
+// indent=2, sort_keys=True)“: two-space indentation, object keys sorted by
 // code point, non-ASCII text preserved literally, and floats rendered with
-// Python's ``repr`` formatting rules. Values that cannot be represented fall
-// back to ``fmt`` formatting (Python falls back to ``repr`` on TypeError).
+// Python's “repr“ formatting rules. Values that cannot be represented fall
+// back to “fmt“ formatting (Python falls back to “repr“ on TypeError).
 func prettyJSON(value any) string {
 	var builder strings.Builder
 	writeJSON(&builder, value, 0)
@@ -314,7 +371,7 @@ func sortedKeys[V any](values map[string]V) []string {
 	return keys
 }
 
-// writeJSONString mirrors Python's ``json.dumps(..., ensure_ascii=False)``
+// writeJSONString mirrors Python's “json.dumps(..., ensure_ascii=False)“
 // string escaping: only quote, backslash, and C0 control characters are
 // escaped; every other code point is emitted as literal UTF-8.
 func writeJSONString(builder *strings.Builder, value string) {
@@ -346,10 +403,10 @@ func writeJSONString(builder *strings.Builder, value string) {
 	builder.WriteByte('"')
 }
 
-// pythonFloat renders a float the way Python's ``repr`` does, because
-// ``json.dumps`` delegates to it: fixed notation for exponents in
+// pythonFloat renders a float the way Python's “repr“ does, because
+// “json.dumps“ delegates to it: fixed notation for exponents in
 // [-4, 16), scientific notation with a signed, at-least-two-digit exponent
-// otherwise, and a trailing ``.0`` on integral values.
+// otherwise, and a trailing “.0“ on integral values.
 func pythonFloat(value float64) string {
 	if math.IsNaN(value) {
 		return "NaN"

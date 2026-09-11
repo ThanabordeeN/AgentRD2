@@ -1,7 +1,7 @@
 // Package events converts bridge messages into canonical world state and
 // timeline events.
 //
-// It is a faithful port of ``runtime/events/normalizer.py``. The normalizer
+// It is a faithful port of `runtime/events/normalizer.py`. The normalizer
 // deliberately preserves fact-shaped data: it does not assign moral labels
 // such as PLAYER_IS_EVIL to observations.
 package events
@@ -18,9 +18,9 @@ import (
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/domain"
 )
 
-// eventNamePattern mirrors the Python validator ``^[A-Z][A-Z0-9_]*$``. Go's
-// ``$`` anchors strictly at the end of the text while Python's also matches
-// just before one trailing newline, hence the optional ``\n``, which makes the
+// eventNamePattern mirrors the Python validator `^[A-Z][A-Z0-9_]*$`. Go's
+// `$` anchors strictly at the end of the text while Python's also matches
+// just before one trailing newline, hence the optional `\n`, which makes the
 // two languages accept exactly the same names.
 var eventNamePattern = regexp.MustCompile(`^[A-Z][A-Z0-9_]*\n?$`)
 
@@ -33,7 +33,7 @@ func NewNormalizer() *Normalizer {
 	return &Normalizer{}
 }
 
-// WorldStateFromMessage normalises a ``world_update`` payload. A missing
+// WorldStateFromMessage normalises a `world_update` payload. A missing
 // npc_id is an error, matching Python.
 func (n *Normalizer) WorldStateFromMessage(raw map[string]any) (domain.WorldState, error) {
 	npcID, err := requireNPCID(raw, "message is missing npc_id")
@@ -43,7 +43,7 @@ func (n *Normalizer) WorldStateFromMessage(raw map[string]any) (domain.WorldStat
 	return domain.WorldStateFromBridgePayload(npcID, raw), nil
 }
 
-// EventFromMessage builds an event from a ``game_event`` (or similar) payload.
+// EventFromMessage builds an event from a `game_event` (or similar) payload.
 //
 // defaultNPCID is used when the payload carries no npc_id. Event names are
 // upper-cased and validated, data must be an object, and a single string
@@ -145,8 +145,12 @@ func (n *Normalizer) EventFromMessage(raw map[string]any, seq int, defaultNPCID 
 	}), nil
 }
 
-// PlayerSpoke builds the standard fact event for player speech. Keys in extra
-// override the generated ones, exactly like Python's ``{"text": text, **data}``.
+// PlayerSpoke builds the standard fact event for player speech.
+//
+// The data merges extra over the generated text key, mirroring Python's
+// `{"text": text, **data}`. Python's call signature rejects a "text" key in
+// extra with a TypeError, so a well-formed Python call can never disagree with
+// this precedence.
 func (n *Normalizer) PlayerSpoke(npcID, text string, extra map[string]any) map[string]any {
 	return map[string]any{
 		"event_name": "PLAYER_SPOKE",
@@ -157,7 +161,8 @@ func (n *Normalizer) PlayerSpoke(npcID, text string, extra map[string]any) map[s
 	}
 }
 
-// NPCSpoke builds the standard fact event for NPC speech.
+// NPCSpoke builds the standard fact event for NPC speech. Its data merges extra
+// over the generated text key, like PlayerSpoke.
 func (n *Normalizer) NPCSpoke(npcID, text string, extra map[string]any) map[string]any {
 	return map[string]any{
 		"event_name": "NPC_SPOKE",
@@ -229,7 +234,7 @@ func requireNPCID(raw map[string]any, message string) (string, error) {
 	return domain.StringFrom(value), nil
 }
 
-// mergeText mirrors Python's ``{"text": text, **extra}``: extra wins.
+// mergeText mirrors Python's `{"text": text, **extra}`: extra wins.
 func mergeText(text string, extra map[string]any) map[string]any {
 	data := make(map[string]any, len(extra)+1)
 	data["text"] = text
@@ -239,8 +244,8 @@ func mergeText(text string, extra map[string]any) map[string]any {
 	return data
 }
 
-// stringList mirrors ``entities = raw.get(field) or []`` followed by
-// ``[entities] if isinstance(entities, str) else list(entities)``. Decoded JSON
+// stringList mirrors `entities = raw.get(field) or []` followed by
+// `[entities] if isinstance(entities, str) else list(entities)`. Decoded JSON
 // arrays are the normal case; a JSON object is iterable in Python (yielding its
 // keys), so its keys are used here too, sorted because Go maps are unordered.
 func stringList(value any, field string) ([]string, error) {
@@ -284,7 +289,7 @@ func summaryFrom(value any) *string {
 	return &text
 }
 
-// importanceFrom mirrors ``float(importance)`` inside Event.__post_init__:
+// importanceFrom mirrors `float(importance)` inside Event.__post_init__:
 // a non-numeric string is an error, a bool is 0 or 1, and the result is clamped
 // to [0, 1] by the canonical event constructor.
 func importanceFrom(value any) (*float64, error) {
@@ -314,7 +319,7 @@ func importanceFrom(value any) (*float64, error) {
 }
 
 // truthy mirrors Python truthiness for the JSON-decoded values the normalizer
-// receives, because the original relies on ``x or default`` in several places.
+// receives, because the original relies on `x or default` in several places.
 func truthy(value any) bool {
 	switch typed := value.(type) {
 	case nil:

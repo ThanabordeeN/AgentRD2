@@ -36,10 +36,38 @@ configurable agent backend to choose high-level actions.
 
 ## Install
 
-The runtime core has **no third-party Python dependencies**. Copy, paste, run —
-there is nothing to `pip install` for the offline path.
+Two ways to run this. Pick one:
 
-### Linux / macOS
+| Path | You need | Notes |
+|---|---|---|
+| **Standalone `rdr2-npc.exe`** | nothing | one download; no Python, no Go, no pip |
+| **Python runtime** | Python 3.10+ | no third-party packages at all |
+
+Both speak the same IPC protocol, read the same `config/`, `data/` and
+`scenarios/` files, and write the same timeline format — the C++ bridge works
+with either.
+
+### Standalone executable (no Python)
+
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2-npc.exe -OutFile rdr2-npc.exe
+.\rdr2-npc.exe --check
+.\rdr2-npc.exe --backend adk
+```
+
+```bash
+# build it yourself (Go 1.27+)
+cd runtime-go && go build -trimpath -ldflags "-s -w" -o rdr2-npc ./cmd/rdr2-npc
+```
+
+See [`runtime-go/README.md`](runtime-go/README.md).
+
+### Python runtime
+
+The core has **no third-party Python dependencies** — there is nothing to
+`pip install` for the offline path.
+
+#### Linux / macOS
 
 ```bash
 git clone https://github.com/ThanabordeeN/AgentRD2.git
@@ -48,7 +76,7 @@ python3 install.py --check      # verify: changes nothing
 python3 run_demo.py             # scan -> activate -> decide -> speak
 ```
 
-### Windows (PowerShell)
+#### Windows (PowerShell)
 
 ```powershell
 git clone https://github.com/ThanabordeeN/AgentRD2.git

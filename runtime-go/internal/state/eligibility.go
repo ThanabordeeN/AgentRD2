@@ -22,7 +22,7 @@ const eligibilityBlacklistReason = "matches story/blacklist configuration"
 // It mirrors the Python "EligibilityResult": Eligible is "allowed", Reason
 // is the primary (first) rejection reason and is empty when the ped is
 // eligible, and Detail always carries the full ordered reason list under the
-// ""reasons"" key.
+// "reasons" key.
 type Result struct {
 	Eligible bool           `json:"eligible"`
 	Reason   string         `json:"reason"`
