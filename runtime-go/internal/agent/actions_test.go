@@ -5,6 +5,7 @@ import (
 
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/domain"
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/timeline"
+	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/tools"
 )
 
 // floatSliceOf converts a decision position argument for assertions.
@@ -419,7 +420,7 @@ func TestExecuteDecisionBlocksMovementInDialogueOnly(t *testing.T) {
 		action("go_to", map[string]any{"destination": "Valentine Saloon"}),
 		action("say", map[string]any{"text": "Keep them cattle movin'."}),
 	)
-	if _, err := runtime.executeDecision(nil, "npc_quest_giver", decision); err != nil {
+	if _, err := runtime.executeDecision("npc_quest_giver", decision); err != nil {
 		t.Fatalf("execute: %v", err)
 	}
 	if len(decision.Actions) != 1 || decision.Actions[0].Tool != "say" {
@@ -448,7 +449,7 @@ func TestExecuteDecisionRecordsGoalLifecycle(t *testing.T) {
 	first := "watch the herd"
 	decision := domain.NewAgentDecision()
 	decision.Goal = &first
-	if _, err := runtime.executeDecision(nil, "npc_001", decision); err != nil {
+	if _, err := runtime.executeDecision("npc_001", decision); err != nil {
 		t.Fatalf("execute: %v", err)
 	}
 	names := eventNames(t, runtime, "npc_001")
@@ -459,7 +460,7 @@ func TestExecuteDecisionRecordsGoalLifecycle(t *testing.T) {
 	second := "bring the cattle in"
 	decision = domain.NewAgentDecision()
 	decision.Goal = &second
-	if _, err := runtime.executeDecision(nil, "npc_001", decision); err != nil {
+	if _, err := runtime.executeDecision("npc_001", decision); err != nil {
 		t.Fatalf("execute: %v", err)
 	}
 	if !containsName(eventNames(t, runtime, "npc_001"), "GOAL_CHANGED") {
@@ -578,7 +579,7 @@ func TestExecutionFailureIsContained(t *testing.T) {
 	runtime := testRuntime(t, quietBackend(), nil)
 	activate(t, runtime, "npc_001")
 	// Unknown tools reach callTool only when stabilization could not drop them.
-	result, err := runtime.callTool(nil, "definitely_not_a_tool", runtime.toolContext("npc_001"), nil)
+	result, err := runtime.callTool("definitely_not_a_tool", runtime.toolContext("npc_001"), nil)
 	if err != nil {
 		t.Fatalf("callTool: %v", err)
 	}
@@ -594,5 +595,83 @@ func TestExecutionFailureIsContained(t *testing.T) {
 	}
 	if !found {
 		t.Fatalf("expected a KeyError ACTION_FAILED record, got %v", failures)
+	}
+}
+
+// TestSayOmitsEmptyOptionalArguments pins the Optional[str] -> "" mapping:
+// Python's AgentSpeech(target=None) must not send a blank target to the bridge.
+func TestSayOmitsEmptyOptionalArguments(t *testing.T) {
+	runtime := testRuntime(t, quietBackend(), nil)
+	activate(t, runtime, "npc_001")
+
+	decision := domain.NewAgentDecision()
+	decision.Speech = &domain.AgentSpeech{Text: "What the hell was that?", Emotion: "alert"}
+	if _, err := runtime.executeDecision("npc_001", decision); err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+
+	arguments := map[string]any(nil)
+	for _, event := range allEvents(t, runtime, "npc_001") {
+		if event.EventName != "ACTION_STARTED" || domain.StringFrom(event.Data["tool"]) != "say" {
+			continue
+		}
+		arguments = domain.MapFrom(event.Data["arguments"])
+	}
+	if arguments == nil {
+		t.Fatal("say was not dispatched")
+	}
+	if _, present := arguments["target"]; present {
+		t.Fatalf("empty target must be omitted, got %v", arguments)
+	}
+	if arguments["text"] != "What the hell was that?" || arguments["emotion"] != "alert" {
+		t.Fatalf("arguments = %v", arguments)
+	}
+
+	// A non-empty target is forwarded.
+	decision = domain.NewAgentDecision()
+	decision.Speech = &domain.AgentSpeech{Text: "Evening.", Target: "player"}
+	if _, err := runtime.executeDecision("npc_001", decision); err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	targets := []any{}
+	for _, event := range allEvents(t, runtime, "npc_001") {
+		if event.EventName != "ACTION_STARTED" || domain.StringFrom(event.Data["tool"]) != "say" {
+			continue
+		}
+		targets = append(targets, domain.MapFrom(event.Data["arguments"])["target"])
+	}
+	if len(targets) != 2 || targets[1] != "player" {
+		t.Fatalf("targets = %v, want the last say to carry player", targets)
+	}
+}
+
+// TestPanickingToolIsContained keeps a misbehaving tool handler from killing
+// the runtime (Python catches every exception in “_call_tool“).
+func TestPanickingToolIsContained(t *testing.T) {
+	runtime := testRuntime(t, quietBackend(), nil)
+	activate(t, runtime, "npc_001")
+	if err := runtime.Registry().Register(tools.Spec{
+		Name: "explode",
+		Handler: func(*tools.Context, map[string]any) domain.ToolResult {
+			panic("boom")
+		},
+	}); err != nil {
+		t.Fatalf("register: %v", err)
+	}
+	result, err := runtime.callTool("explode", runtime.toolContext("npc_001"), nil)
+	if err != nil {
+		t.Fatalf("callTool must contain the panic: %v", err)
+	}
+	if result.Status != domain.ActionFailed || result.Reason != "boom" {
+		t.Fatalf("result = %v", result)
+	}
+	found := false
+	for _, failure := range failedActions(t, runtime, "npc_001") {
+		if failure["reason"] == "panic" && failure["message"] == "boom" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("panic was not recorded on the timeline")
 	}
 }

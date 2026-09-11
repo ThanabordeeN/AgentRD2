@@ -182,7 +182,10 @@ func (r *Runtime) handleGameEvent(ctx context.Context, raw map[string]any) (map[
 	if err != nil {
 		return errorReply(err.Error()), nil
 	}
-	event, err := r.appendEvent(npcID, normalized.EventName, appendOptionsFromEvent(normalized))
+	// Store.Append mirrors Python's ``timeline.append(event)``: the normalized
+	// event is persisted as-is (including a bridge-supplied event_id), with the
+	// sequence number repaired under the store lock.
+	event, err := r.timeline.Append(normalized)
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +216,10 @@ func (r *Runtime) handleActionResult(ctx context.Context, raw map[string]any) (m
 	if err != nil {
 		return errorReply(err.Error()), nil
 	}
-	event, err := r.appendEvent(npcID, normalized.EventName, appendOptionsFromEvent(normalized))
+	// Store.Append mirrors Python's ``timeline.append(event)``: the normalized
+	// event is persisted as-is (including a bridge-supplied event_id), with the
+	// sequence number repaired under the store lock.
+	event, err := r.timeline.Append(normalized)
 	if err != nil {
 		return nil, err
 	}

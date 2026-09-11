@@ -12,7 +12,7 @@ import (
 // executeDecision records goal/mood changes and runs the decision's speech and
 // actions through the tool registry.
 // The caller must hold r.mu.
-func (r *Runtime) executeDecision(ctx context.Context, npcID string, decision *domain.AgentDecision) ([]domain.ToolResult, error) {
+func (r *Runtime) executeDecision(npcID string, decision *domain.AgentDecision) ([]domain.ToolResult, error) {
 	st := r.agentStateLocked(npcID)
 	results := []domain.ToolResult{}
 	if st.DialogueOnly {
@@ -71,11 +71,17 @@ func (r *Runtime) executeDecision(ctx context.Context, npcID string, decision *d
 	toolCtx := r.toolContext(npcID)
 	if decision.Speech != nil {
 		if r.speechAllowed(npcID) {
-			result, err := r.callTool(ctx, "say", toolCtx, map[string]any{
-				"text":    decision.Speech.Text,
-				"target":  decision.Speech.Target,
-				"emotion": decision.Speech.Emotion,
-			})
+			// Python's AgentSpeech carries Optional[str] target/emotion and
+			// _call_tool drops None arguments; the Go zero value stands in for
+			// None, so empty fields are omitted rather than sent blank.
+			sayArguments := map[string]any{"text": decision.Speech.Text}
+			if decision.Speech.Target != "" {
+				sayArguments["target"] = decision.Speech.Target
+			}
+			if decision.Speech.Emotion != "" {
+				sayArguments["emotion"] = decision.Speech.Emotion
+			}
+			result, err := r.callTool("say", toolCtx, sayArguments)
 			if err != nil {
 				return nil, err
 			}
@@ -89,7 +95,7 @@ func (r *Runtime) executeDecision(ctx context.Context, npcID string, decision *d
 			// Avoid double speaking when the backend emits both.
 			continue
 		}
-		result, err := r.callTool(ctx, action.Tool, toolCtx, action.Arguments)
+		result, err := r.callTool(action.Tool, toolCtx, action.Arguments)
 		if err != nil {
 			return nil, err
 		}
@@ -244,7 +250,7 @@ func (r *Runtime) recentPosition(npcID string) []float64 {
 // Python “_call_tool“ did and converting handler panics into failed results
 // so an action failure never kills the runtime.
 // The caller must hold r.mu.
-func (r *Runtime) callTool(ctx context.Context, name string, toolCtx *tools.Context, arguments map[string]any) (domain.ToolResult, error) {
+func (r *Runtime) callTool(name string, toolCtx *tools.Context, arguments map[string]any) (domain.ToolResult, error) {
 	filtered := map[string]any{}
 	for key, value := range arguments {
 		if value == nil {

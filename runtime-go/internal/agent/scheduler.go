@@ -38,7 +38,7 @@ func (r *Runtime) scheduleReasoning(ctx context.Context, npcID, reason string, t
 	st.LastDecisionAt = r.now()
 	defer func() { st.Reasoning = false }()
 
-	if err := r.emitWaitGesture(ctx, npcID, reason, trigger); err != nil {
+	if err := r.emitWaitGesture(npcID, reason, trigger); err != nil {
 		return nil, err
 	}
 	agentContext := r.buildContextLocked(npcID, reason, trigger)
@@ -50,7 +50,7 @@ func (r *Runtime) scheduleReasoning(ctx context.Context, npcID, reason string, t
 		decision = r.applyBehaviorGuardrails(npcID, decision, agentContext)
 	}
 	decision = r.applySpeechPolicy(npcID, decision, reason)
-	if _, err := r.executeDecision(ctx, npcID, decision); err != nil {
+	if _, err := r.executeDecision(npcID, decision); err != nil {
 		return nil, err
 	}
 	st.LastDecisionAt = r.now()
@@ -132,7 +132,7 @@ func (r *Runtime) availableToolsFor(npcID string) []string {
 // generates. This is a soft overlay and is marked as a transient action, so it
 // does not block idle planning while the real decision is being generated.
 // The caller must hold r.mu.
-func (r *Runtime) emitWaitGesture(ctx context.Context, npcID, reason string, trigger *domain.Event) error {
+func (r *Runtime) emitWaitGesture(npcID, reason string, trigger *domain.Event) error {
 	if !r.settings.ThinkingPolicy.WaitGestures {
 		return nil
 	}
@@ -149,7 +149,7 @@ func (r *Runtime) emitWaitGesture(ctx context.Context, npcID, reason string, tri
 		return nil
 	}
 	style := waitGestureStyle(reason, trigger)
-	_, err := r.callTool(ctx, "think", r.toolContext(npcID), map[string]any{
+	_, err := r.callTool("think", r.toolContext(npcID), map[string]any{
 		"style":    style,
 		"duration": 2.5,
 	})

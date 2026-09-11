@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/backend"
+	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/domain"
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/state"
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/timeline"
 )
@@ -431,5 +432,67 @@ func TestConcurrentHandleMessageIsSafe(t *testing.T) {
 		if _, err := runtime.Timeline().AllEvents(npcID); err != nil {
 			t.Fatalf("timeline for %s is corrupt: %v", npcID, err)
 		}
+	}
+}
+
+// TestWorldUpdateAndEventValidationErrors covers the normalizer error replies.
+func TestWorldUpdateAndEventValidationErrors(t *testing.T) {
+	runtime := testRuntime(t, quietBackend(), nil)
+	reply := handle(t, runtime, map[string]any{"type": "world_update", "state": map[string]any{}})
+	if reply["type"] != "error" {
+		t.Fatalf("world_update without npc_id = %v", reply)
+	}
+	// Lowercase names are upper-cased (and accepted), exactly like Python's
+	// normalizer; a name with invalid characters is rejected.
+	reply = handle(t, runtime, map[string]any{
+		"type": "game_event", "npc_id": "npc_001", "event_name": "lowercase",
+	})
+	if reply["type"] != "event_ack" || reply["seq"] == nil {
+		t.Fatalf("lowercase event_name should be upper-cased and accepted: %v", reply)
+	}
+	reply = handle(t, runtime, map[string]any{
+		"type": "game_event", "npc_id": "npc_001", "event_name": "bad name",
+	})
+	if reply["type"] != "error" || !containsSubstring(domain.StringFrom(reply["reason"]), "invalid event_name") {
+		t.Fatalf("invalid event_name = %v", reply)
+	}
+}
+
+// TestStorySafetyAcceptsInStoryAlias covers the “in_story“ fallback.
+func TestStorySafetyAcceptsInStoryAlias(t *testing.T) {
+	runtime := testRuntime(t, quietBackend(), nil)
+	activate(t, runtime, "npc_001")
+	handle(t, runtime, map[string]any{"type": "mission_state", "in_story": true})
+	if got := runtime.Ownership().State("npc_001"); got != state.StateSuspended {
+		t.Fatalf("state = %s, want SUSPENDED", got)
+	}
+	// An explicit null "active" does not fall back to in_story.
+	handle(t, runtime, map[string]any{"type": "story_safety", "active": nil, "in_story": true})
+	if got := runtime.Ownership().State("npc_001"); got != state.StateAIActive {
+		t.Fatalf("state = %s, want AI_ACTIVE after resume", got)
+	}
+}
+
+// TestBridgeEventIDAndTimestampArePreserved checks that a bridge-supplied
+// event_id survives persistence (Python's “timeline.append(event)“ keeps it).
+func TestBridgeEventIDAndTimestampArePreserved(t *testing.T) {
+	runtime := testRuntime(t, quietBackend(), nil)
+	handle(t, runtime, map[string]any{
+		"type": "game_event", "npc_id": "npc_001", "event_name": "PLAYER_SPOKE",
+		"event_id": "evt_bridge_42", "timestamp": 1712345678.5,
+		"data": map[string]any{"text": "Howdy."},
+	})
+	events := allEvents(t, runtime, "npc_001")
+	if len(events) != 1 {
+		t.Fatalf("events = %d, want 1", len(events))
+	}
+	if events[0].EventID != "evt_bridge_42" {
+		t.Fatalf("event_id = %q, want the bridge id", events[0].EventID)
+	}
+	if events[0].Timestamp != 1712345678.5 {
+		t.Fatalf("timestamp = %v, want the bridge timestamp", events[0].Timestamp)
+	}
+	if events[0].Seq != 1 {
+		t.Fatalf("seq = %d, want 1", events[0].Seq)
 	}
 }

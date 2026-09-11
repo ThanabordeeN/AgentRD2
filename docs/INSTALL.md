@@ -26,12 +26,22 @@ runs immediately.
 
 ## A — Standalone executable (no Python)
 
-Download the runtime and run it. Nothing else to install:
+Download the portable bundle, extract, run. Nothing else to install:
+
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2-npc-portable-win64.zip -OutFile rdr2-npc.zip
+Expand-Archive rdr2-npc.zip -DestinationPath rdr2-npc
+cd rdr2-npc
+.\rdr2-npc.exe --check          # verify the installation
+.\rdr2-npc.exe --backend adk    # or --backend rule for an offline run
+```
+
+The bundle contains the executable plus `config/`, `data/` and `scenarios/`, so
+`--check` and `--scenarios .\scenarios` work immediately. Only the executable on
+its own:
 
 ```powershell
 Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2-npc.exe -OutFile rdr2-npc.exe
-.\rdr2-npc.exe --check          # verify the installation
-.\rdr2-npc.exe --backend adk    # or --backend rule for an offline run
 ```
 
 ```bash
@@ -39,13 +49,16 @@ Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/downl
 cd runtime-go && go build -trimpath -ldflags "-s -w" -o rdr2-npc ./cmd/rdr2-npc
 ```
 
-The executable looks for `config/` and `data/` next to itself first, then in the
-working directory tree, so a portable folder works:
+The executable looks for `config/` and `data/` next to itself first, then
+anywhere up the working-directory tree, so both a portable folder and a full
+checkout work:
 
 ```text
 rdr2-npc.exe
 config/settings.json
 data/profiles/  data/wiki/  data/quests/  data/timelines/
+scenarios/            # optional: lets you self-test with --scenarios
+.env                  # optional: same keys as the Python runtime
 ```
 
 Model access is configured exactly like the Python runtime — CLI flag >
@@ -64,6 +77,9 @@ Useful flags:
 | `--scenarios <dir>` | replay the shared scenario suite (parity harness) |
 | `--host` / `--port` | IPC bind address for the in-game bridge |
 | `--version` | build information |
+
+The bundle ships no `ScriptHookRDR2.dll`: grab that from
+<http://www.dev-c.com/rdr2/scripthookrdr2/> when you install the `.asi`.
 
 ---
 

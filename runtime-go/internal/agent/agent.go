@@ -295,22 +295,6 @@ func (r *Runtime) appendEvent(npcID, eventName string, opts timeline.AppendOptio
 	return r.timeline.AppendEvent(npcID, eventName, opts)
 }
 
-// appendOptionsFromEvent maps a normalized event onto the frozen
-// AppendOptions shape so it can be persisted unchanged.
-func appendOptionsFromEvent(event domain.Event) timeline.AppendOptions {
-	timestamp := event.Timestamp
-	return timeline.AppendOptions{
-		Data:       event.Data,
-		Entities:   event.Entities,
-		Tags:       event.Tags,
-		Summary:    event.Summary,
-		Importance: event.Importance,
-		GameTime:   event.GameTime,
-		Location:   event.Location,
-		Timestamp:  &timestamp,
-	}
-}
-
 // npcFromPending resolves an NPC id from a pending action request id, matching
 // “_npc_from_pending“.
 func (r *Runtime) npcFromPending(raw map[string]any) string {

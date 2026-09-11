@@ -1,0 +1,37 @@
+# Line-ending policy.
+#
+# Windows checkouts default to core.autocrlf=true, which rewrites Go sources to
+# CRLF; `gofmt -l` then reports every file as unformatted and CI fails. Pinning
+# the endings here keeps the toolchain, the Python runtime and the C++ bridge
+# byte-identical across platforms.
+
+* text=auto
+
+# Source and data files are always LF.
+*.go    text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.sh    text eol=lf
+*.json  text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.cfg   text eol=lf
+*.cpp   text eol=lf
+*.hpp   text eol=lf
+*.h     text eol=lf
+*.mod   text eol=lf
+*.sum   text eol=lf
+
+# Windows scripts keep CRLF so cmd.exe parses them reliably.
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# Binary artifacts.
+*.asi   binary
+*.dll   binary
+*.exe   binary
+*.lib   binary
+*.zip   binary
+*.png   binary
+*.jpg   binary

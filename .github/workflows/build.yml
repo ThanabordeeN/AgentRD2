@@ -100,11 +100,42 @@ jobs:
           .\rdr2-npc.exe --version
           .\rdr2-npc.exe --check
 
+      # One download for users: the executable plus the config/data it reads.
+      - name: Package the portable Windows bundle
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $stage = "dist/rdr2-npc"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item runtime-go/rdr2-npc.exe $stage/
+          Copy-Item -Recurse -Path config -Destination "$stage/"
+          Copy-Item -Recurse -Path data -Destination "$stage/"
+          Copy-Item -Recurse -Path scenarios -Destination "$stage/"
+          New-Item -ItemType Directory -Force -Path "$stage/data/timelines" | Out-Null
+          Remove-Item "$stage/data/timelines/*" -Force -ErrorAction SilentlyContinue
+          Copy-Item .env.example "$stage/.env.example"
+          Copy-Item docs/INSTALL.md "$stage/INSTALL.md"
+          Compress-Archive -Path "$stage/*" -DestinationPath "dist/rdr2-npc-portable-win64.zip"
+
+      - name: Verify the bundle runs standalone
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $probe = "dist/probe"
+          Expand-Archive -Path "dist/rdr2-npc-portable-win64.zip" -DestinationPath $probe
+          Push-Location $probe
+          .\rdr2-npc.exe --version
+          .\rdr2-npc.exe --check
+          .\rdr2-npc.exe --scenarios .\scenarios
+          Pop-Location
+
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Windows'
         with:
           name: rdr2-npc-runtime-exe
-          path: runtime-go/rdr2-npc.exe
+          path: |
+            runtime-go/rdr2-npc.exe
+            dist/rdr2-npc-portable-win64.zip
           if-no-files-found: error
 
   # ---------------------------------------------------------------------------
@@ -174,26 +205,31 @@ jobs:
           files: |
             artifacts/**/rdr2_ai_bridge.asi
             artifacts/**/rdr2-npc.exe
+            artifacts/**/rdr2-npc-portable-win64.zip
           body: |
-            Two downloads, pick what you need:
+            Three downloads, pick what you need:
 
             | File | What it is |
             |---|---|
-            | `rdr2-npc.exe` | Standalone runtime — **no Python required**. |
+            | `rdr2-npc-portable-win64.zip` | **Easiest.** Runtime + config + data. Extract and run — no Python, no Go. |
+            | `rdr2-npc.exe` | Just the standalone runtime, for an existing checkout. |
             | `rdr2_ai_bridge.asi` | In-game plugin. Copy next to `RDR2.exe`, together with `ScriptHookRDR2.dll` from http://www.dev-c.com/rdr2/scripthookrdr2/ |
 
-            Standalone runtime:
+            Standalone runtime (no Python required):
 
             ```powershell
+            Expand-Archive rdr2-npc-portable-win64.zip -DestinationPath rdr2-npc
+            cd rdr2-npc
             .\rdr2-npc.exe --check
             .\rdr2-npc.exe --backend adk
             ```
 
-            Python runtime (dependency-free, still supported):
+            Python runtime (still supported, also dependency-free):
 
             ```bash
             python3 install.py --check
             python3 -m runtime.main --backend llm
             ```
 
-            See `docs/INSTALL.md` for the full setup guide.
+            Both runtimes speak the same IPC protocol and read the same files, so
+            the `.asi` works with either. See `docs/INSTALL.md` for the full guide.
