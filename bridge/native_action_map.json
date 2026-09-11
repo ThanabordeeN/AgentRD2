@@ -1,0 +1,3025 @@
+{
+  "meta": {
+    "description": "High-level agent tool -> RDR2 TASK/AUDIO/PED native mapping candidate list",
+    "sources": [
+      {
+        "repo": "Halen84/ScriptHookRDR2DotNet-V2",
+        "commit": "03f2264d8d2c1e4c6e79d10cf7ba48d247c6e506",
+        "use": "C# wrapper and TaskInvoker examples"
+      },
+      {
+        "repo": "alloc8or/rdr3-nativedb-data",
+        "commit": "b3c5d5eae2966202db17518d6b3978899be2a247",
+        "use": "native names, hashes, params, comments"
+      },
+      {
+        "repo": "femga/rdr3_discoveries",
+        "commit": "49087fb2756594d2364e4abf79ee1df44d6ef3b4",
+        "use": "emotes, animation dictionaries, scenarios"
+      }
+    ]
+  },
+  "actions": {
+    "wander": {
+      "category": "movement",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_WANDER_STANDARD",
+          "namespace": "TASK",
+          "hash": "0xBB9CE077274F6A1B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "p1"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            }
+          ],
+          "comment": "Makes ped walk around the area. set p1 to 10.0f and p2 to 10 if you want the ped to walk anywhere without a duration."
+        },
+        {
+          "name": "TASK_WANDER_IN_AREA",
+          "namespace": "TASK",
+          "hash": "0xE054346CA3A0F315",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "radius"
+            },
+            {
+              "type": "float",
+              "name": "p5"
+            },
+            {
+              "type": "float",
+              "name": "p6"
+            },
+            {
+              "type": "int",
+              "name": "p7"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_WANDER_IN_VOLUME",
+          "namespace": "TASK",
+          "hash": "0x9FDA168777B28424",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Volume",
+              "name": "volume"
+            },
+            {
+              "type": "float",
+              "name": "p2"
+            },
+            {
+              "type": "float",
+              "name": "p3"
+            },
+            {
+              "type": "int",
+              "name": "p4"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_WANDER_SWIM",
+          "namespace": "TASK",
+          "hash": "0x527EA3DB8BC7F03B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "go_to_position": {
+      "category": "movement",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_GO_TO_COORD_ANY_MEANS",
+          "namespace": "TASK",
+          "hash": "0x5BC448CB78FA3E88",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "BOOL",
+              "name": "p6"
+            },
+            {
+              "type": "int",
+              "name": "walkingStyle"
+            },
+            {
+              "type": "float",
+              "name": "p8"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_FOLLOW_NAV_MESH_TO_COORD",
+          "namespace": "TASK",
+          "hash": "0x15D3A79D4E44B913",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "speedMultiplier"
+            },
+            {
+              "type": "int",
+              "name": "timeout"
+            },
+            {
+              "type": "float",
+              "name": "stoppingRange"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "float",
+              "name": "heading"
+            }
+          ],
+          "comment": "If no timeout, set timeout to -1."
+        },
+        {
+          "name": "TASK_GO_STRAIGHT_TO_COORD",
+          "namespace": "TASK",
+          "hash": "0xD76B57B44F1E6F8B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "moveBlendSpeedY"
+            },
+            {
+              "type": "int",
+              "name": "timeBeforeTeleport"
+            },
+            {
+              "type": "float",
+              "name": "finalHeading"
+            },
+            {
+              "type": "float",
+              "name": "targetRadius"
+            },
+            {
+              "type": "int",
+              "name": "p8"
+            }
+          ],
+          "comment": "Go to coords wihtout using navmesh, if timeBeforeTeleport is -1 then it never teleports p8 is 1 or 0 still unknown."
+        }
+      ]
+    },
+    "go_to_entity": {
+      "category": "movement",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_GOTO_ENTITY_OFFSET_XY",
+          "namespace": "TASK",
+          "hash": "0x338E7EF52B6095A9",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "float",
+              "name": "targetRadius"
+            },
+            {
+              "type": "float",
+              "name": "xOffset"
+            },
+            {
+              "type": "float",
+              "name": "yOffset"
+            },
+            {
+              "type": "float",
+              "name": "moveBlendRatio"
+            },
+            {
+              "type": "int",
+              "name": "offsetFlags"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_GO_TO_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x6A071245EB0D1882",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "target"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "float",
+              "name": "distance"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "float",
+              "name": "p5"
+            },
+            {
+              "type": "int",
+              "name": "p6"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "follow": {
+      "category": "movement",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_FOLLOW_TO_OFFSET_OF_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x304AE42E357B8C7E",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "float",
+              "name": "offsetX"
+            },
+            {
+              "type": "float",
+              "name": "offsetY"
+            },
+            {
+              "type": "float",
+              "name": "offsetZ"
+            },
+            {
+              "type": "float",
+              "name": "movementSpeed"
+            },
+            {
+              "type": "int",
+              "name": "timeout"
+            },
+            {
+              "type": "float",
+              "name": "stoppingRange"
+            },
+            {
+              "type": "BOOL",
+              "name": "persistFollowing"
+            },
+            {
+              "type": "BOOL",
+              "name": "p9"
+            },
+            {
+              "type": "BOOL",
+              "name": "walkOnly"
+            },
+            {
+              "type": "BOOL",
+              "name": "p11"
+            },
+            {
+              "type": "BOOL",
+              "name": "p12"
+            },
+            {
+              "type": "BOOL",
+              "name": "p13"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_GOTO_ENTITY_OFFSET_XY",
+          "namespace": "TASK",
+          "hash": "0x338E7EF52B6095A9",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "float",
+              "name": "targetRadius"
+            },
+            {
+              "type": "float",
+              "name": "xOffset"
+            },
+            {
+              "type": "float",
+              "name": "yOffset"
+            },
+            {
+              "type": "float",
+              "name": "moveBlendRatio"
+            },
+            {
+              "type": "int",
+              "name": "offsetFlags"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "stop": {
+      "category": "task_control",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "CLEAR_PED_TASKS_IMMEDIATELY",
+          "namespace": "TASK",
+          "hash": "0xAAA34F8A7CB32098",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "BOOL",
+              "name": "p1"
+            },
+            {
+              "type": "BOOL",
+              "name": "resetCrouch"
+            }
+          ],
+          "comment": "Immediately stops the pedestrian from whatever it's doing. They stop fighting, animations, etc. they forget what they were doing. resetCrouch TRUE = ped will stand up if crouching, FALSE = ped will remain crouching if crouched"
+        },
+        {
+          "name": "CLEAR_PED_TASKS",
+          "namespace": "TASK",
+          "hash": "0xE1EF3C1216AFF2CD",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "BOOL",
+              "name": "p1"
+            },
+            {
+              "type": "BOOL",
+              "name": "p2"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "CLEAR_PED_SECONDARY_TASK",
+          "namespace": "TASK",
+          "hash": "0x176CECF6F920D707",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_PAUSE",
+          "namespace": "TASK",
+          "hash": "0xE73A266DB0CA9042",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "ms"
+            }
+          ],
+          "comment": "This tasks the ped to do nothing for the specified amount of milliseconds. This is useful if you want to add a delay between tasks when using a sequence task."
+        },
+        {
+          "name": "TASK_STAND_STILL",
+          "namespace": "TASK",
+          "hash": "0x919BE13EED931959",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "time"
+            }
+          ],
+          "comment": "Makes the specified ped stand still for (time) milliseconds."
+        }
+      ]
+    },
+    "wait": {
+      "category": "task_control",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_PAUSE",
+          "namespace": "TASK",
+          "hash": "0xE73A266DB0CA9042",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "ms"
+            }
+          ],
+          "comment": "This tasks the ped to do nothing for the specified amount of milliseconds. This is useful if you want to add a delay between tasks when using a sequence task."
+        },
+        {
+          "name": "TASK_STAND_STILL",
+          "namespace": "TASK",
+          "hash": "0x919BE13EED931959",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "time"
+            }
+          ],
+          "comment": "Makes the specified ped stand still for (time) milliseconds."
+        }
+      ]
+    },
+    "look_at_entity": {
+      "category": "attention",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_LOOK_AT_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x69F4BE8C8CC4796C",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "lookAtTarget"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "p3"
+            },
+            {
+              "type": "int",
+              "name": "p4"
+            },
+            {
+              "type": "int",
+              "name": "p5"
+            }
+          ],
+          "comment": "param3: duration in ms, use -1 to look forever param4: using 2048 is fine param5: using 3 is fine"
+        }
+      ]
+    },
+    "look_at_coord": {
+      "category": "attention",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_LOOK_AT_COORD",
+          "namespace": "TASK",
+          "hash": "0x6FA46612594F7973",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "int",
+              "name": "p6"
+            },
+            {
+              "type": "BOOL",
+              "name": "p7"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "clear_attention": {
+      "category": "attention",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_CLEAR_LOOK_AT",
+          "namespace": "TASK",
+          "hash": "0x0F804F1DB19B9689",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "face_entity": {
+      "category": "attention",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_TURN_PED_TO_FACE_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x5AD23D40115353AC",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "targetEntity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "float",
+              "name": "p3"
+            },
+            {
+              "type": "float",
+              "name": "p4"
+            },
+            {
+              "type": "float",
+              "name": "p5"
+            }
+          ],
+          "comment": "duration: the amount of time in milliseconds to do the task. -1 will keep the task going until either another task is applied, or CLEAR_ALL_TASKS() is called with the ped"
+        },
+        {
+          "name": "TASK_ACHIEVE_HEADING",
+          "namespace": "TASK",
+          "hash": "0x93B93A37987F1F3D",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "heading"
+            },
+            {
+              "type": "int",
+              "name": "timeout"
+            }
+          ],
+          "comment": "Makes the specified ped achieve the specified heading. pedHandle: The handle of the ped to assign the task to. heading: The desired heading. timeout: The time, in milliseconds, to allow the task to complete. If the task times out, it is canceled, and the ped will stay at the heading it managed to reach in the time."
+        }
+      ]
+    },
+    "face_coord": {
+      "category": "attention",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "TASK_TURN_PED_TO_FACE_COORD",
+          "namespace": "TASK",
+          "hash": "0x1DDA930A0AC38571",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            }
+          ],
+          "comment": "duration in milliseconds"
+        },
+        {
+          "name": "TASK_ACHIEVE_HEADING",
+          "namespace": "TASK",
+          "hash": "0x93B93A37987F1F3D",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "heading"
+            },
+            {
+              "type": "int",
+              "name": "timeout"
+            }
+          ],
+          "comment": "Makes the specified ped achieve the specified heading. pedHandle: The handle of the ped to assign the task to. heading: The desired heading. timeout: The time, in milliseconds, to allow the task to complete. If the task times out, it is canceled, and the ped will stay at the heading it managed to reach in the time."
+        }
+      ]
+    },
+    "say": {
+      "category": "speech",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "PLAY_PED_AMBIENT_SPEECH_NATIVE",
+          "namespace": "AUDIO",
+          "hash": "0x8E04FEDD28D42462",
+          "return_type": "BOOL",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "speaker"
+            },
+            {
+              "type": "Any*",
+              "name": "params"
+            }
+          ],
+          "comment": "struct ScriptedSpeechParams { const char* speechName; const char* voiceName; alignas(8) int variation; alignas(8) Hash speechParamHash; alignas(8) Ped listenerPed; alignas(8) BOOL syncOverNetwork; alignas(8) int v7; alignas(8) int v8; }; static_assert(sizeof(ScriptedSpeechParams) == 0x40, \"incorrect ScriptedSpeechParams size\"); Example: ScriptedSpeechParams params{\"RE_PH_RHD_V3_AGGRO\", \"0405_U_M_M_RhdSheriff_01\", 1, joaat(\"SPEECH_PARAMS_BEAT_SHOUTED_CLEAR\"), 0, true, 1, 1}; PLAY_PED_AMBIENT_SPEE"
+        },
+        {
+          "name": "_CREATE_NEW_SCRIPTED_PED_AMBIENT_SPEECH",
+          "namespace": "AUDIO",
+          "hash": "0x72E4D1C4639BC465",
+          "return_type": "int",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "speaker"
+            },
+            {
+              "type": "Any*",
+              "name": "params"
+            }
+          ],
+          "comment": "Create a scripted speech to control speech. If handle is less than 0, it's invalid. params struct for ScriptedSpeechParams see: PLAY_PED_AMBIENT_SPEECH_NATIVE Returns scriptedSpeech handle."
+        },
+        {
+          "name": "_PLAY_SOUND_FROM_SCRIPTED_PED_AMBIENT_SPEECH",
+          "namespace": "AUDIO",
+          "hash": "0xB18FEC133C7C6C69",
+          "return_type": "int",
+          "params": [
+            {
+              "type": "int",
+              "name": "scriptedSpeech"
+            }
+          ],
+          "comment": "Play/advance a scripted speech created via _CREATE_NEW_SCRIPTED_PED_AMBIENT_SPEECH and return a status code. Return values: 0 = not ready/invalid/failed 1 = started/playing 2 = finished/consumed (you can drop the handle) Typical usage: poll this in a tick after creating the speech; when it returns 2, clear your handle."
+        },
+        {
+          "name": "STOP_CURRENT_PLAYING_SPEECH",
+          "namespace": "AUDIO",
+          "hash": "0x79D2F0E66F81D90D",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "SET_AMBIENT_VOICE_NAME",
+          "namespace": "AUDIO",
+          "hash": "0x6C8065A3B780185B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "const char*",
+              "name": "name"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "gesture_play_anim": {
+      "category": "gesture_animation",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_PLAY_ANIM",
+          "namespace": "TASK",
+          "hash": "0xEA47FE3719165B94",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "const char*",
+              "name": "animDict"
+            },
+            {
+              "type": "const char*",
+              "name": "animName"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "float",
+              "name": "speedMultiplier"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "float",
+              "name": "playbackRate"
+            },
+            {
+              "type": "BOOL",
+              "name": "p8"
+            },
+            {
+              "type": "int",
+              "name": "ikFlags"
+            },
+            {
+              "type": "BOOL",
+              "name": "p10"
+            },
+            {
+              "type": "const char*",
+              "name": "taskFilter"
+            },
+            {
+              "type": "BOOL",
+              "name": "p12"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/tree/master/animations flags: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eScriptedAnimFlags ikFlags: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eIkControlFlags"
+        },
+        {
+          "name": "TASK_PLAY_ANIM_ADVANCED",
+          "namespace": "TASK",
+          "hash": "0x83CDB10EA29B370B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "const char*",
+              "name": "animDict"
+            },
+            {
+              "type": "const char*",
+              "name": "animName"
+            },
+            {
+              "type": "float",
+              "name": "posX"
+            },
+            {
+              "type": "float",
+              "name": "posY"
+            },
+            {
+              "type": "float",
+              "name": "posZ"
+            },
+            {
+              "type": "float",
+              "name": "rotX"
+            },
+            {
+              "type": "float",
+              "name": "rotY"
+            },
+            {
+              "type": "float",
+              "name": "rotZ"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "float",
+              "name": "speedMultiplier"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "float",
+              "name": "p13"
+            },
+            {
+              "type": "int",
+              "name": "p14"
+            },
+            {
+              "type": "int",
+              "name": "p15"
+            },
+            {
+              "type": "int",
+              "name": "p16"
+            }
+          ],
+          "comment": "flags: see TASK_PLAY_ANIM ikFlags: see TASK_PLAY_ANIM"
+        },
+        {
+          "name": "TASK_SCRIPTED_ANIMATION",
+          "namespace": "TASK",
+          "hash": "0x126EF75F1E17ABE5",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any*",
+              "name": "args"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "gesture_emote": {
+      "category": "gesture_animation",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_PLAY_EMOTE_WITH_HASH",
+          "namespace": "TASK",
+          "hash": "0xB31A277C1AC7B7FF",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "emoteType"
+            },
+            {
+              "type": "int",
+              "name": "playbackMode"
+            },
+            {
+              "type": "Hash",
+              "name": "emote"
+            },
+            {
+              "type": "BOOL",
+              "name": "isSecondaryTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "canBreakOut"
+            },
+            {
+              "type": "BOOL",
+              "name": "disableEarlyOutAnimTag"
+            },
+            {
+              "type": "BOOL",
+              "name": "ignoreInvalidMainTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "destroyProps"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/blob/master/animations/kit_emotes_list.lua emote: https://alloc8or.re/rdr3/doc/enums/eEmote.txt enum eEmoteType { EMOTE_TYPE_INVALID = -1, EMOTE_TYPE_REACT, EMOTE_TYPE_ACTION, EMOTE_TYPE_TAUNT, EMOTE_TYPE_GREET, EMOTE_TYPE_TWIRL_GUN, EMOTE_TYPE_DANCE_FLOOR }; enum eEmotePlaybackMode { EMOTE_PM_INVALID = -1, EMOTE_PM_UPPERBODY, EMOTE_PM_UPPERBODY_LOOP, EMOTE_PM_FULLBODY, };"
+        },
+        {
+          "name": "_TASK_PLAY_EMOTE",
+          "namespace": "TASK",
+          "hash": "0x884E3436CC1F41DD",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "emoteType"
+            },
+            {
+              "type": "int",
+              "name": "playbackMode"
+            },
+            {
+              "type": "Hash",
+              "name": "emote"
+            },
+            {
+              "type": "BOOL",
+              "name": "isSecondaryTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "canBreakOut"
+            },
+            {
+              "type": "BOOL",
+              "name": "disableEarlyOutAnimTag"
+            },
+            {
+              "type": "BOOL",
+              "name": "ignoreInvalidMainTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "destroyProps"
+            }
+          ],
+          "comment": "Similar to 0xB31A277C1AC7B7FF but checks if the ped's inventory contains the specified emote kit."
+        },
+        {
+          "name": "_TASK_EMOTE_ACTION",
+          "namespace": "TASK",
+          "hash": "0x6A1AF481407BF6E9",
+          "return_type": "BOOL",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            }
+          ],
+          "comment": "Triggers the 'action / flourish' sub-clip of the ped's currently playing emote. Returns true on success, false if no valid emote state. Observed in ingame UIs to fire a flourish while an emote loop is active. Internally resets the ped's synced-emote entity and sets a flag to play the action once."
+        },
+        {
+          "name": "_TASK_EMOTE_OUTRO",
+          "namespace": "TASK",
+          "hash": "0xBDFEEB7600BCD938",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "IS_EMOTE_TASK_RUNNING",
+          "namespace": "TASK",
+          "hash": "0xCF9B71C0AF824036",
+          "return_type": "BOOL",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "gesture_scenario": {
+      "category": "gesture_animation",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_START_SCENARIO_IN_PLACE_HASH",
+          "namespace": "TASK",
+          "hash": "0x524B54361229154F",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Hash",
+              "name": "scenarioHash"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "BOOL",
+              "name": "playEnterAnim"
+            },
+            {
+              "type": "Hash",
+              "name": "conditionalHash"
+            },
+            {
+              "type": "float",
+              "name": "heading"
+            },
+            {
+              "type": "BOOL",
+              "name": "p6"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/blob/master/animations/scenarios Params: duration in milliseconds conditionalHash (optionally): 0 = play random conditional anim. Every conditional anim has requirements to play it. If requirements are not met, ped plays random allowed conditional anim or can be stuck. For example, this scenario type has possible conditional anim WORLD_HUMAN_LEAN_BACK_WALL_SMOKING_MALE_D, but it can not be played by player, because condition is set to NOT be CAICondition"
+        },
+        {
+          "name": "TASK_START_SCENARIO_AT_POSITION",
+          "namespace": "TASK",
+          "hash": "0x4D1F61FC34AF3CD1",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Hash",
+              "name": "scenarioHash"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "heading"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "BOOL",
+              "name": "sittingScenario"
+            },
+            {
+              "type": "BOOL",
+              "name": "teleport"
+            },
+            {
+              "type": "const char*",
+              "name": "p9"
+            },
+            {
+              "type": "float",
+              "name": "p10"
+            },
+            {
+              "type": "BOOL",
+              "name": "p11"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_USE_RANDOM_SCENARIO_IN_GROUP",
+          "namespace": "TASK",
+          "hash": "0x14747F4A5971DE4E",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            },
+            {
+              "type": "Any",
+              "name": "p2"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            },
+            {
+              "type": "Any",
+              "name": "p4"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_USE_SCENARIO_POINT",
+          "namespace": "TASK",
+          "hash": "0xCCDAE6324B6A821C",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "scenario"
+            },
+            {
+              "type": "const char*",
+              "name": "conditionalAnim"
+            },
+            {
+              "type": "int",
+              "name": "p3"
+            },
+            {
+              "type": "BOOL",
+              "name": "p4"
+            },
+            {
+              "type": "BOOL",
+              "name": "p5"
+            },
+            {
+              "type": "Hash",
+              "name": "p6"
+            },
+            {
+              "type": "BOOL",
+              "name": "p7"
+            },
+            {
+              "type": "float",
+              "name": "p8"
+            },
+            {
+              "type": "BOOL",
+              "name": "p9"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "gesture_control": {
+      "category": "gesture_animation",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "SET_PED_CAN_PLAY_GESTURE_ANIMS",
+          "namespace": "PED",
+          "hash": "0xBAF20C5432058024",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            },
+            {
+              "type": "Any",
+              "name": "p2"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "SET_PED_GESTURE_GROUP",
+          "namespace": "PED",
+          "hash": "0xDDF803377F94AAA8",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "const char*",
+              "name": "gesture"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "animation_streaming": {
+      "category": "gesture_animation",
+      "produces_physical_gesture_or_animation": false,
+      "natives": [
+        {
+          "name": "REQUEST_ANIM_DICT",
+          "namespace": "STREAMING",
+          "hash": "0xA862A2AD321F94B4",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "const char*",
+              "name": "animDict"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "HAS_ANIM_DICT_LOADED",
+          "namespace": "STREAMING",
+          "hash": "0x27FF6FE8009B40CA",
+          "return_type": "BOOL",
+          "params": [
+            {
+              "type": "const char*",
+              "name": "animDict"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "REMOVE_ANIM_DICT",
+          "namespace": "STREAMING",
+          "hash": "0x4763145053A33D46",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "const char*",
+              "name": "animDict"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "react_entity": {
+      "category": "reaction",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_REACT",
+          "namespace": "TASK",
+          "hash": "0xC4C32C31920E1B70",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "reactingTo"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "const char*",
+              "name": "reactionName"
+            },
+            {
+              "type": "float",
+              "name": "p6"
+            },
+            {
+              "type": "float",
+              "name": "p7"
+            },
+            {
+              "type": "int",
+              "name": "p8"
+            }
+          ],
+          "comment": "Makes a ped react to an entity. Params: reactingTo Entity can be 0, p8 is always 4"
+        },
+        {
+          "name": "TASK_SHOCKING_EVENT_REACT",
+          "namespace": "TASK",
+          "hash": "0x452419CBD838065B",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Any",
+              "name": "p1"
+            },
+            {
+              "type": "Any",
+              "name": "p2"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "hands_up": {
+      "category": "reaction_pose",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_HANDS_UP",
+          "namespace": "TASK",
+          "hash": "0xF2EAB31979A7F910",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Ped",
+              "name": "facingPed"
+            },
+            {
+              "type": "int",
+              "name": "timeToFacePed"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            }
+          ],
+          "comment": "flags: 0 = HANDS_UP_NOTHING; 1 = HANDS_UP_STRAIGHT_TO_LOOP"
+        }
+      ]
+    },
+    "cower": {
+      "category": "reaction_pose",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_COWER",
+          "namespace": "TASK",
+          "hash": "0x3EB1FE9E8E908E15",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Ped",
+              "name": "pedToCowerFrom"
+            },
+            {
+              "type": "const char*",
+              "name": "p3"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "duck": {
+      "category": "reaction_pose",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_DUCK",
+          "namespace": "TASK",
+          "hash": "0xA14B5FBF986BAC23",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "p1"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "jump": {
+      "category": "reaction_pose",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_JUMP",
+          "namespace": "TASK",
+          "hash": "0x0AE4086104E067B1",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "BOOL",
+              "name": "unused"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "knocked_out": {
+      "category": "reaction_pose",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_KNOCKED_OUT",
+          "namespace": "TASK",
+          "hash": "0xF90427F00A495A28",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "p1"
+            },
+            {
+              "type": "BOOL",
+              "name": "permanently"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_KNOCKED_OUT_AND_HOGTIED",
+          "namespace": "TASK",
+          "hash": "0x42AC6401ABB8C7E5",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "koTimeOffset"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            }
+          ],
+          "comment": "koTimeOffset (seconds): offset applied to the knockout timer-positive delays recovery (longer KO), negative brings recovery sooner, 0.0 initializes with no extension (immediate baseline). flags (bitmask): 1 = default variant (forwarded to the KO task ctor; R* commonly uses 1), 2 = sets an unk internal synced toggle for this task, 4 = sets another unk internal synced toggle."
+        }
+      ]
+    },
+    "flee_from_entity": {
+      "category": "flee",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_FLEE_PED",
+          "namespace": "TASK",
+          "hash": "0xFD45175A6DFD7CE9",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "fleeFromTarget"
+            },
+            {
+              "type": "int",
+              "name": "fleeStyle"
+            },
+            {
+              "type": "int",
+              "name": "flag"
+            },
+            {
+              "type": "float",
+              "name": "p4"
+            },
+            {
+              "type": "int",
+              "name": "p5"
+            },
+            {
+              "type": "int",
+              "name": "p6"
+            }
+          ],
+          "comment": "Params: p4 = -1.0f, p5 = -1, p6 = 0 in R* Scripts fleeStyle: see TASK_FLEE_COORD"
+        },
+        {
+          "name": "TASK_SMART_FLEE_PED",
+          "namespace": "TASK",
+          "hash": "0x22B0D0E37CCB840D",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "fleeFromTarget"
+            },
+            {
+              "type": "float",
+              "name": "fleeDistance"
+            },
+            {
+              "type": "int",
+              "name": "fleeTime"
+            },
+            {
+              "type": "int",
+              "name": "fleeType"
+            },
+            {
+              "type": "float",
+              "name": "fleeSpeed"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            }
+          ],
+          "comment": "Makes a ped run away from another ped (fleeFromTarget) fleeDistance = ped will flee this distance fleeTime = ped will flee for this amount of time, set to \"-1\" to flee forever fleeType = see TASK_FLEE_COORD, can be 0, R* Scripts: fm_mission/race_controller: 66048; fme_escaped_convicts: 2260992, 2523136, 2359296; la_alligator/fox: 2097152; net_fetch: 17301536; net_stable_mount: 540928 fleeSpeed = mostly 3f, rarely 1f in R* Scripts"
+        },
+        {
+          "name": "TASK_WALK_AWAY",
+          "namespace": "TASK",
+          "hash": "0x04ACFAC71E6858F9",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "flee_from_coord": {
+      "category": "flee",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_FLEE_COORD",
+          "namespace": "TASK",
+          "hash": "0x58428248BF4B64E4",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "fleeStyle"
+            },
+            {
+              "type": "int",
+              "name": "p5"
+            },
+            {
+              "type": "float",
+              "name": "p6"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "p8"
+            }
+          ],
+          "comment": "Params: p5 = some flag?, p6 = -1.0f, p8 = 0 in R* Scripts fleeStyle: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eFleeStyle"
+        },
+        {
+          "name": "TASK_SMART_FLEE_COORD",
+          "namespace": "TASK",
+          "hash": "0x94587F17E9C365D5",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "float",
+              "name": "distance"
+            },
+            {
+              "type": "int",
+              "name": "time"
+            },
+            {
+              "type": "int",
+              "name": "fleeType"
+            },
+            {
+              "type": "float",
+              "name": "fleeSpeed"
+            }
+          ],
+          "comment": "Makes the specified ped flee the specified distance from the specified position. fleeType: see TASK_FLEE_COORD"
+        }
+      ]
+    },
+    "item_interaction": {
+      "category": "interaction",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "START_TASK_ITEM_INTERACTION",
+          "namespace": "TASK",
+          "hash": "0xAE72E7DF013AAA61",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Hash",
+              "name": "itemHash"
+            },
+            {
+              "type": "Hash",
+              "name": "interactionAnimHash"
+            },
+            {
+              "type": "int",
+              "name": "p3"
+            },
+            {
+              "type": "int",
+              "name": "flag"
+            },
+            {
+              "type": "float",
+              "name": "p5"
+            }
+          ],
+          "comment": "Params: p3 = 0, 1; p5 = 0.0f, -1.0f https://github.com/femga/rdr3_discoveries/tree/master/tasks/TASK_ITEM_INTERACTION"
+        }
+      ]
+    },
+    "animal_interaction": {
+      "category": "interaction",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_ANIMAL_INTERACTION",
+          "namespace": "TASK",
+          "hash": "0xCD181A959CFDD7F4",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "Hash",
+              "name": "interactionType"
+            },
+            {
+              "type": "Hash",
+              "name": "interactionModel"
+            },
+            {
+              "type": "BOOL",
+              "name": "skipIdleAnimationClip"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/tree/master/tasks/TASK_ANIMAL_INTERACTION"
+        },
+        {
+          "name": "TASK_HORSE_ACTION",
+          "namespace": "TASK",
+          "hash": "0xA09CFD29100F06C3",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "action"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/tree/master/tasks/TASK_HORSE_ACTION Params: p2, p3 are set to 0 in R* Scripts"
+        }
+      ]
+    },
+    "mount": {
+      "category": "vehicle_mount",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_MOUNT_ANIMAL",
+          "namespace": "TASK",
+          "hash": "0x92DB0739813C5186",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "mount"
+            },
+            {
+              "type": "int",
+              "name": "timer"
+            },
+            {
+              "type": "int",
+              "name": "seatIndex"
+            },
+            {
+              "type": "float",
+              "name": "pedSpeed"
+            },
+            {
+              "type": "int",
+              "name": "mountStyle"
+            },
+            {
+              "type": "Any",
+              "name": "p6"
+            },
+            {
+              "type": "Any",
+              "name": "p7"
+            }
+          ],
+          "comment": "timer: in ms, if it reaches 0 it will auto warp the ped on the horse mountStyle: See TASK_ENTER_VEHICLE Flags will still apply to mountStyle"
+        },
+        {
+          "name": "TASK_ENTER_VEHICLE",
+          "namespace": "TASK",
+          "hash": "0xC20E50AA46D09CA8",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Vehicle",
+              "name": "vehicle"
+            },
+            {
+              "type": "int",
+              "name": "timeout"
+            },
+            {
+              "type": "int",
+              "name": "seat"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "int",
+              "name": "flag"
+            },
+            {
+              "type": "Any",
+              "name": "p6"
+            }
+          ],
+          "comment": "flags: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eEnterExitVehicleFlags"
+        }
+      ]
+    },
+    "dismount": {
+      "category": "vehicle_mount",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_DISMOUNT_ANIMAL",
+          "namespace": "TASK",
+          "hash": "0x48E92D3DDE23C23A",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "rider"
+            },
+            {
+              "type": "int",
+              "name": "taskFlag"
+            },
+            {
+              "type": "Any",
+              "name": "p2"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            },
+            {
+              "type": "Any",
+              "name": "p4"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            }
+          ],
+          "comment": "Dismounts the ped from the animal it's mounted on. taskFlag affects what side the rider gets off. p2-p5 are almost always 0. flags: See TASK_ENTER_VEHICLE"
+        },
+        {
+          "name": "TASK_LEAVE_VEHICLE",
+          "namespace": "TASK",
+          "hash": "0xD3DBCE61A490BE02",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Vehicle",
+              "name": "vehicle"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "Ped",
+              "name": "unkPed"
+            }
+          ],
+          "comment": "flags: See TASK_ENTER_VEHICLE"
+        }
+      ]
+    },
+    "combat_deferred": {
+      "category": "combat_deferred",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_COMBAT_PED",
+          "namespace": "TASK",
+          "hash": "0xF166E48407BAC484",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            },
+            {
+              "type": "int",
+              "name": "p3"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_COMBAT_PED_TIMED",
+          "namespace": "TASK",
+          "hash": "0x944F30DCB7096BDE",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_AIM_GUN_AT_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x9B53BB6E8943AF53",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "targetEntity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "BOOL",
+              "name": "p3"
+            },
+            {
+              "type": "int",
+              "name": "p4"
+            }
+          ],
+          "comment": "duration: the amount of time in milliseconds to do the task. -1 will keep the task going until either another task is applied, or CLEAR_ALL_TASKS() is called with the ped"
+        },
+        {
+          "name": "TASK_SHOOT_AT_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x08DA95E8298AE772",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "Entity",
+              "name": "targetEntity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Hash",
+              "name": "firingPattern"
+            },
+            {
+              "type": "BOOL",
+              "name": "affectCockedState"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_SEEK_COVER_FROM_PED",
+          "namespace": "TASK",
+          "hash": "0x84D32B3BEC531324",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "fromPed"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            },
+            {
+              "type": "Any",
+              "name": "p4"
+            },
+            {
+              "type": "Any",
+              "name": "p5"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "think": {
+      "category": "thinking_gesture",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_PLAY_ANIM",
+          "namespace": "TASK",
+          "hash": "0xEA47FE3719165B94",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "const char*",
+              "name": "animDict"
+            },
+            {
+              "type": "const char*",
+              "name": "animName"
+            },
+            {
+              "type": "float",
+              "name": "speed"
+            },
+            {
+              "type": "float",
+              "name": "speedMultiplier"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "int",
+              "name": "flags"
+            },
+            {
+              "type": "float",
+              "name": "playbackRate"
+            },
+            {
+              "type": "BOOL",
+              "name": "p8"
+            },
+            {
+              "type": "int",
+              "name": "ikFlags"
+            },
+            {
+              "type": "BOOL",
+              "name": "p10"
+            },
+            {
+              "type": "const char*",
+              "name": "taskFilter"
+            },
+            {
+              "type": "BOOL",
+              "name": "p12"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/tree/master/animations flags: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eScriptedAnimFlags ikFlags: https://github.com/Halen84/RDR3-Native-Flags-And-Enums/tree/main/eIkControlFlags"
+        },
+        {
+          "name": "TASK_PLAY_EMOTE_WITH_HASH",
+          "namespace": "TASK",
+          "hash": "0xB31A277C1AC7B7FF",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "emoteType"
+            },
+            {
+              "type": "int",
+              "name": "playbackMode"
+            },
+            {
+              "type": "Hash",
+              "name": "emote"
+            },
+            {
+              "type": "BOOL",
+              "name": "isSecondaryTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "canBreakOut"
+            },
+            {
+              "type": "BOOL",
+              "name": "disableEarlyOutAnimTag"
+            },
+            {
+              "type": "BOOL",
+              "name": "ignoreInvalidMainTask"
+            },
+            {
+              "type": "BOOL",
+              "name": "destroyProps"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/blob/master/animations/kit_emotes_list.lua emote: https://alloc8or.re/rdr3/doc/enums/eEmote.txt enum eEmoteType { EMOTE_TYPE_INVALID = -1, EMOTE_TYPE_REACT, EMOTE_TYPE_ACTION, EMOTE_TYPE_TAUNT, EMOTE_TYPE_GREET, EMOTE_TYPE_TWIRL_GUN, EMOTE_TYPE_DANCE_FLOOR }; enum eEmotePlaybackMode { EMOTE_PM_INVALID = -1, EMOTE_PM_UPPERBODY, EMOTE_PM_UPPERBODY_LOOP, EMOTE_PM_FULLBODY, };"
+        }
+      ]
+    },
+    "walk_away": {
+      "category": "flee_walk",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_WALK_AWAY",
+          "namespace": "TASK",
+          "hash": "0x04ACFAC71E6858F9",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "entity"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "aim_at": {
+      "category": "combat",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_AIM_GUN_AT_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x9B53BB6E8943AF53",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Entity",
+              "name": "targetEntity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "BOOL",
+              "name": "p3"
+            },
+            {
+              "type": "int",
+              "name": "p4"
+            }
+          ],
+          "comment": "duration: the amount of time in milliseconds to do the task. -1 will keep the task going until either another task is applied, or CLEAR_ALL_TASKS() is called with the ped"
+        },
+        {
+          "name": "TASK_AIM_GUN_AT_COORD",
+          "namespace": "TASK",
+          "hash": "0x6671F3EEC681BDA1",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "time"
+            },
+            {
+              "type": "BOOL",
+              "name": "p5"
+            },
+            {
+              "type": "BOOL",
+              "name": "p6"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "shoot_at": {
+      "category": "combat",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_SHOOT_AT_ENTITY",
+          "namespace": "TASK",
+          "hash": "0x08DA95E8298AE772",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Entity",
+              "name": "entity"
+            },
+            {
+              "type": "Entity",
+              "name": "targetEntity"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Hash",
+              "name": "firingPattern"
+            },
+            {
+              "type": "BOOL",
+              "name": "affectCockedState"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_SHOOT_AT_COORD",
+          "namespace": "TASK",
+          "hash": "0x46A6CC01E0826106",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Hash",
+              "name": "firingPattern"
+            },
+            {
+              "type": "Any",
+              "name": "p6"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "attack": {
+      "category": "combat",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_COMBAT_PED",
+          "namespace": "TASK",
+          "hash": "0xF166E48407BAC484",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            },
+            {
+              "type": "int",
+              "name": "p3"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_COMBAT_PED_TIMED",
+          "namespace": "TASK",
+          "hash": "0x944F30DCB7096BDE",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "int",
+              "name": "p2"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "take_cover": {
+      "category": "combat",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_SEEK_COVER_FROM_PED",
+          "namespace": "TASK",
+          "hash": "0x84D32B3BEC531324",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "Ped",
+              "name": "fromPed"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            },
+            {
+              "type": "Any",
+              "name": "p4"
+            },
+            {
+              "type": "Any",
+              "name": "p5"
+            }
+          ],
+          "comment": ""
+        },
+        {
+          "name": "TASK_SEEK_COVER_FROM_POS",
+          "namespace": "TASK",
+          "hash": "0x75AC2B60386D89F2",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "float",
+              "name": "x"
+            },
+            {
+              "type": "float",
+              "name": "y"
+            },
+            {
+              "type": "float",
+              "name": "z"
+            },
+            {
+              "type": "int",
+              "name": "duration"
+            },
+            {
+              "type": "Any",
+              "name": "p5"
+            },
+            {
+              "type": "Any",
+              "name": "p6"
+            },
+            {
+              "type": "Any",
+              "name": "p7"
+            }
+          ],
+          "comment": ""
+        }
+      ]
+    },
+    "horse_action": {
+      "category": "interaction",
+      "produces_physical_gesture_or_animation": true,
+      "natives": [
+        {
+          "name": "TASK_HORSE_ACTION",
+          "namespace": "TASK",
+          "hash": "0xA09CFD29100F06C3",
+          "return_type": "void",
+          "params": [
+            {
+              "type": "Ped",
+              "name": "ped"
+            },
+            {
+              "type": "int",
+              "name": "action"
+            },
+            {
+              "type": "Ped",
+              "name": "targetPed"
+            },
+            {
+              "type": "Any",
+              "name": "p3"
+            }
+          ],
+          "comment": "https://github.com/femga/rdr3_discoveries/tree/master/tasks/TASK_HORSE_ACTION Params: p2, p3 are set to 0 in R* Scripts"
+        }
+      ]
+    }
+  },
+  "gesture_map": {
+    "note": "Maps runtime gesture(type) to candidate animation/emote primitives. Verify conditions/inventory and game build.",
+    "entries": {
+      "neutral": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "g_speak_talk",
+          "animName": "g_speak_talk_head_enter"
+        }
+      ],
+      "friendly": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@script_story@ridentalk",
+          "animName": "positive_nodding_001"
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_GREET_HAND_SHAKE_1",
+          "hash": "0x6A662B8A",
+          "emoteType": 3
+        }
+      ],
+      "annoyed": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@script_story@ridentalk",
+          "animName": "negative_headshake_001"
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_REACTION_WAG_FINGER_1",
+          "hash": "0xFF45D102",
+          "emoteType": 0
+        }
+      ],
+      "afraid": [
+        {
+          "native": "TASK_COWER"
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_REACTION_SCARED_1",
+          "hash": "0xB1C3DE80",
+          "emoteType": 0
+        }
+      ],
+      "wave": [
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_GREET_SUBTLE_WAVE_1",
+          "hash": "0xA38D1E64",
+          "emoteType": 3
+        },
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "g_speak_talk",
+          "animName": "g_speak_talk_rhand_enter"
+        }
+      ],
+      "nod": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@script_story@ridentalk",
+          "animName": "positive_nodding_001"
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_REACTION_NOD_HEAD_1",
+          "hash": "0xCEF7AA76",
+          "emoteType": 0
+        }
+      ],
+      "shrug": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@script_story@ridentalk",
+          "animName": "positive_shrug_001"
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_REACTION_SHRUG_1",
+          "hash": "0x2E097BB5",
+          "emoteType": 0
+        }
+      ],
+      "think": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@gen_male@standing@silent",
+          "animName": "aknwoledge_tough_chin_scratch_l_001",
+          "gender": "male",
+          "suggestedFlags": [
+            "Gesture",
+            "Upperbody",
+            "NotInterruptable"
+          ]
+        },
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@gen_female@standing@silent",
+          "animName": "aknwoledge_tough_chin_scratch_l_001",
+          "gender": "female",
+          "suggestedFlags": [
+            "Gesture",
+            "Upperbody",
+            "NotInterruptable"
+          ]
+        },
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_ACTION_IDEA_1",
+          "hash": "0xEEC55CB7",
+          "emoteType": 1
+        }
+      ],
+      "ponder": [
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@gen_male@standing@silent",
+          "animName": "aknwoledge_timid_look_down_f_001",
+          "suggestedFlags": [
+            "Gesture",
+            "Upperbody"
+          ]
+        },
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "ai_gestures@script_story@ridentalk",
+          "animName": "concerned_001",
+          "suggestedFlags": [
+            "Gesture",
+            "Upperbody"
+          ]
+        }
+      ],
+      "scheme": [
+        {
+          "native": "TASK_PLAY_EMOTE_WITH_HASH",
+          "emote": "KIT_EMOTE_ACTION_SCHEME_1",
+          "hash": "0x2322C484",
+          "emoteType": 1
+        },
+        {
+          "native": "TASK_PLAY_ANIM",
+          "animDict": "script_mp@emotes@scheme@male@unarmed@upper",
+          "animName": "loop",
+          "suggestedFlags": [
+            "Gesture",
+            "Upperbody",
+            "Looping"
+          ]
+        }
+      ]
+    }
+  },
+  "tool_map": {
+    "get_world_state": [],
+    "grab_timeline": [],
+    "wander": [
+      "wander"
+    ],
+    "go_to": [
+      "go_to_position",
+      "go_to_entity"
+    ],
+    "follow": [
+      "follow"
+    ],
+    "stop": [
+      "stop"
+    ],
+    "wait": [
+      "wait"
+    ],
+    "look_at": [
+      "look_at_entity",
+      "look_at_coord"
+    ],
+    "clear_attention": [
+      "clear_attention"
+    ],
+    "face": [
+      "face_entity",
+      "face_coord"
+    ],
+    "say": [
+      "say"
+    ],
+    "gesture": [
+      "gesture_play_anim",
+      "gesture_emote",
+      "gesture_scenario",
+      "gesture_control"
+    ],
+    "think": [
+      "think"
+    ],
+    "investigate": [
+      "go_to_position",
+      "look_at_coord",
+      "react_entity"
+    ],
+    "flee_from": [
+      "flee_from_entity",
+      "flee_from_coord"
+    ],
+    "walk_away": [
+      "walk_away"
+    ],
+    "react": [
+      "react_entity"
+    ],
+    "hands_up": [
+      "hands_up"
+    ],
+    "cower": [
+      "cower"
+    ],
+    "duck": [
+      "duck"
+    ],
+    "jump": [
+      "jump"
+    ],
+    "mount": [
+      "mount"
+    ],
+    "dismount": [
+      "dismount"
+    ],
+    "item_interaction": [
+      "item_interaction"
+    ],
+    "animal_interaction": [
+      "animal_interaction"
+    ],
+    "horse_action": [
+      "horse_action"
+    ],
+    "aim_at": [
+      "aim_at"
+    ],
+    "shoot_at": [
+      "shoot_at"
+    ],
+    "attack": [
+      "attack"
+    ],
+    "take_cover": [
+      "take_cover"
+    ],
+    "get_world_lore": []
+  },
+  "wait_gesture_map": {
+    "listen": [
+      "think"
+    ],
+    "alert": [
+      "think"
+    ],
+    "think": [
+      "think"
+    ],
+    "ponder": [
+      "think",
+      "scheme"
+    ],
+    "scheme": [
+      "scheme"
+    ],
+    "neutral": [
+      "think"
+    ]
+  }
+}

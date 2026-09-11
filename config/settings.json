@@ -1,0 +1,66 @@
+{
+  "ipc": {
+    "host": "127.0.0.1",
+    "port": 8765
+  },
+  "activation": {
+    "candidate_distance_m": 20.0,
+    "aware_distance_m": 10.0,
+    "conversation_range_m": 8.0,
+    "min_conversation_range_m": 5.0
+  },
+  "scheduler": {
+    "max_conversation_agents": 1,
+    "max_reasoning_agents": 3,
+    "nearby_tracked_limit": 32,
+    "idle_thinking_seconds": 5.0
+  },
+  "push_to_talk": {
+    "key": "V",
+    "capture_while_held": true
+  },
+  "speech": {
+    "cooldown_seconds": 6.0,
+    "recent_speech_penalty_seconds": 12.0,
+    "social_relevance_threshold": 0.45,
+    "silence_probability": 0.25,
+    "global_cooldown_seconds": 2.0
+  },
+  "story_safety": {
+    "block_if_uncertain": true
+  },
+  "adk": {
+    "provider": "openai",
+    "model": "deepseek-v4.1-flash",
+    "api_base": "https://opencode.ai/zen/go/v1",
+    "api_key_env": "OPENCODE_API_KEY",
+    "reasoning_effort": "low",
+    "extra_body": {
+      "thinking": {
+        "type": "enabled"
+      }
+    }
+  },
+  "story_blacklist_path": "config/story_blacklist.json",
+  "profiles_dir": "data/profiles",
+  "timelines_dir": "data/timelines",
+  "thinking_policy": {
+    "default_mode": "low",
+    "disabled_for_events": [
+      "PLAYER_APPROACHED",
+      "PLAYER_LOOKED_AT_NPC",
+      "PLAYER_LEFT_AREA",
+      "NPC_ACTIVATED"
+    ],
+    "disabled_for_reasons": [
+      "ped_scan_activation",
+      "idle",
+      "pass_by",
+      "deferred_promotion"
+    ],
+    "wait_gestures": true
+  },
+  "wiki_context_path": "data/wiki/rdr2_context.json",
+  "quests_dir": "data/quests",
+  "character_context_path": "data/wiki/characters.json"
+}

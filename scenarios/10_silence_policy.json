@@ -1,0 +1,71 @@
+{
+  "name": "Silence policy",
+  "description": "An NPC with high silence probability activates but still chooses not to speak.",
+  "npc_id": "npc_001",
+  "backend": { "silence_probability": 1.0 },
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_APPROACHED",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player"],
+        "data": { "distance": 8.0 }
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["NPC_ACTIVATED"],
+    "event_names_not_contain": ["NPC_SPOKE", "ACTION_STARTED"]
+  }
+}

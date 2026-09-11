@@ -1,0 +1,71 @@
+{
+  "name": "Live gunshot guardrail",
+  "description": "Real LLM sees a gunshot; runtime guardrail guarantees investigate for high-courage NPC.",
+  "npc_id": "npc_hunter",
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_hunter",
+            "model": "a_m_m_hunter_01",
+            "name": "Silas Boone",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_hunter",
+            "model": "a_m_m_hunter_01",
+            "name": "Silas Boone",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "GUNSHOT_HEARD",
+        "npc_id": "npc_hunter",
+        "entities": ["player"],
+        "tags": ["world", "violence"],
+        "data": { "position": [100.0, 200.0, 10.0] }
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["GUNSHOT_HEARD", "NPC_ACTIVATED", "ACTION_STARTED"],
+    "action_tools_contain": ["investigate"],
+    "llm_calls_at_least": 1
+  }
+}

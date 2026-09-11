@@ -1,0 +1,87 @@
+{
+  "name": "Historical memory through timeline",
+  "description": "A seeded old PLAYER_HELPED_NPC event changes the NPC's greeting, and grab_timeline retrieves it.",
+  "npc_id": "npc_001",
+  "seed_events": [
+    {
+      "event_name": "PLAYER_HELPED_NPC",
+      "npc_id": "npc_001",
+      "entities": ["player"],
+      "tags": ["player", "help"],
+      "importance": 0.9,
+      "data": { "summary": "The player defended the NPC during a robbery." }
+    }
+  ],
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_APPROACHED",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player"],
+        "data": { "distance": 8.0 }
+      }
+    },
+    {
+      "tool_call": {
+        "tool": "grab_timeline",
+        "arguments": { "tags": ["player"], "limit": 10 },
+        "save_as": "history"
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "npc_spoke_contains": ["Good to see a friendly face."],
+    "saved_timelines": { "history": ["PLAYER_HELPED_NPC"] }
+  }
+}

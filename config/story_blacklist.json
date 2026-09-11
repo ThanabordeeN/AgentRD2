@@ -1,0 +1,26 @@
+{
+  "protagonists": {
+    "models": ["player_zero", "player_three"],
+    "names": ["Arthur Morgan", "John Marston"]
+  },
+  "gang_members": {
+    "models": ["g_m_m_uniduster_01", "g_m_m_unibraithwaites_01", "g_m_m_unibountyhunters_01"],
+    "names": ["Dutch van der Linde", "Hosea Matthews", "Bill Williamson", "Micah Bell", "Charles Smith", "Sadie Adler", "Abigail Roberts", "Jack Marston", "Javier Escuella", "Sean MacGuire", "Lenny Summers", "Kieran Duffy", "Mary-Beth Gaskill", "Tilly Jackson", "Karen Jones", "Molly O'Shea", "Susan Grimshaw", "Josiah Trelawny", "Reverend Swanson", "Uncle"]
+  },
+  "named_story_characters": {
+    "models": [],
+    "names": ["Leviticus Cornwall", "Andrew Milton", "Edgar Ross", "Colm O'Driscoll", "Angelo Bronte", "Alberto Fussar", "Eagle Flies", "Rains Fall", "Captain Monroe", "Sister Calderon", "Brother Dorkins", "Thomas Downes", "Edith Downes", "Archibald MacGregor", "R*"]
+  },
+  "persistent_quest_characters": {
+    "models": [],
+    "names": ["Mary Linton", "Charlotte Balfour", "Albert Mason", "Deborah MacGuire", "Evelyn Miller", "Jeremiah Compson", "Marco Drago", "The Artist", "Professor Bell"]
+  },
+  "mission_only_models": {
+    "models": ["mp_*", "cs_*"],
+    "names": []
+  },
+  "unstable_models": {
+    "models": ["a_c_bear_01", "a_c_wolf", "a_c_cougar_01", "a_c_alligator_01"],
+    "names": []
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "name": "Live LLM activation smoke",
+  "description": "Uses the real OpenAI-compatible LLM backend to activate an NPC and return a structured decision.",
+  "npc_id": "npc_001",
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100,
+            "metadata": { "camera_alignment": 0.9 }
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100,
+            "metadata": { "camera_alignment": 0.9 }
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_APPROACHED",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player"],
+        "data": { "distance": 8.0 }
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["PLAYER_APPROACHED", "NPC_ACTIVATED"],
+    "llm_calls_at_least": 1
+  }
+}

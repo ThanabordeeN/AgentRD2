@@ -1,0 +1,72 @@
+{
+  "name": "Story safety suspend and resume",
+  "description": "Mission safety suspends AI ownership and later resumes it cleanly.",
+  "npc_id": "npc_001",
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_LOOKED_AT_NPC",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player"],
+        "data": {}
+      }
+    },
+    { "message": { "type": "story_safety", "active": true, "reason": "mission" } },
+    { "message": { "type": "story_safety", "active": false, "reason": "mission_complete" } }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["AGENT_SUSPENDED", "AGENT_RESUMED"],
+    "ordered_event_names": ["AGENT_SUSPENDED", "AGENT_RESUMED"]
+  }
+}

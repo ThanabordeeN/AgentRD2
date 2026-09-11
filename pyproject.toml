@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rdr2-living-npc"
+version = "0.2.0"
+description = "Event-driven ambient NPC agent overlay for Red Dead Redemption 2"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+adk = ["google-adk", "litellm"]
+audio = ["faster-whisper", "pyttsx3"]
+
+[project.scripts]
+rdr2-npc-runtime = "runtime.main:main"
+
+[tool.setuptools.packages.find]
+include = ["runtime*"]

@@ -1,0 +1,73 @@
+{
+  "name": "Gunshot investigation",
+  "description": "High-courage NPC investigates a nearby gunshot instead of fleeing.",
+  "npc_id": "npc_hunter",
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_hunter",
+            "model": "a_m_m_hunter_01",
+            "name": "Silas Boone",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_hunter",
+            "model": "a_m_m_hunter_01",
+            "name": "Silas Boone",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "GUNSHOT_HEARD",
+        "npc_id": "npc_hunter",
+        "entities": ["player"],
+        "tags": ["world", "violence"],
+        "data": { "position": [100.0, 200.0, 10.0] }
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["GUNSHOT_HEARD", "NPC_ACTIVATED", "ACTION_STARTED", "NPC_SPOKE"],
+    "action_tools_contain": ["investigate", "say"],
+    "npc_spoke_contains": ["What the hell was that?"],
+    "current_goal": "investigate the gunshot",
+    "mood": "alert"
+  }
+}

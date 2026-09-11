@@ -1,0 +1,83 @@
+{
+  "name": "Threat causes flee",
+  "description": "Low-courage NPC reacts to a player threat by fleeing and shouting.",
+  "npc_id": "npc_001",
+  "steps": [
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 15.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "ped_scan",
+        "peds": [
+          {
+            "entity_id": "npc_001",
+            "model": "a_m_m_farmer_01",
+            "name": "Elias Carter",
+            "is_ped": true,
+            "is_human": true,
+            "is_alive": true,
+            "is_player": false,
+            "is_story_character": false,
+            "is_mission_owned": false,
+            "in_scripted_state": false,
+            "in_cutscene": false,
+            "blacklisted": false,
+            "distance_m": 8.0,
+            "visible": true,
+            "health": 100
+          }
+        ]
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_LOOKED_AT_NPC",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player"],
+        "data": {}
+      }
+    },
+    {
+      "message": {
+        "type": "game_event",
+        "event_name": "PLAYER_THREATENED_NPC",
+        "npc_id": "npc_001",
+        "entities": ["player"],
+        "tags": ["player", "threat"],
+        "data": { "weapon": "revolver", "distance": 2.6 }
+      }
+    }
+  ],
+  "expect": {
+    "ownership": "AI_ACTIVE",
+    "event_names_contain": ["PLAYER_THREATENED_NPC", "ACTION_STARTED", "NPC_SPOKE"],
+    "action_tools_contain": ["flee_from", "say"],
+    "npc_spoke_contains": ["Stay back!"],
+    "current_goal": "get away from the player",
+    "mood": "afraid"
+  }
+}

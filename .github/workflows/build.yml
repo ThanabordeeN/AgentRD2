@@ -1,0 +1,116 @@
+name: build
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Tier 0/1: the dependency-free runtime must work on a clean machine.
+  # ---------------------------------------------------------------------------
+  runtime:
+    name: runtime (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: No third-party packages installed
+        run: python -c "import sys; print(sys.version)"
+
+      - name: Doctor
+        run: python install.py --check
+
+      - name: Offline demo
+        run: python run_demo.py
+
+      - name: Deterministic scenarios
+        run: python scenario_runner.py
+
+      - name: Test suite
+        run: python -m unittest discover -s tests -v
+
+  # ---------------------------------------------------------------------------
+  # Tier 2: publish the in-game plugin so users need no compiler.
+  # ---------------------------------------------------------------------------
+  asi:
+    name: native bridge (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download the official ScriptHookRDR2 SDK
+        run: python scripts/install_scripthook_sdk.py
+
+      - name: Configure
+        run: cmake -S bridge -B bridge/build -DRDR2AI_HAS_SCRIPTHOOK=ON -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build bridge/build --config Release
+
+      - name: Verify the .asi exists
+        shell: pwsh
+        run: |
+          $asi = Get-ChildItem -Path bridge/build -Filter rdr2_ai_bridge.asi -Recurse
+          if (-not $asi) { throw "rdr2_ai_bridge.asi was not produced" }
+          Write-Host "built: $($asi.FullName)"
+
+      - name: Portable core test
+        run: |
+          cmake -S bridge -B bridge/build-core
+          cmake --build bridge/build-core --config Release
+          ctest --test-dir bridge/build-core -C Release --output-on-failure
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rdr2_ai_bridge-asi
+          path: bridge/build/**/rdr2_ai_bridge.asi
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # Attach the plugin to a GitHub release when a version tag is pushed.
+  # ---------------------------------------------------------------------------
+  release:
+    name: attach artifacts to release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [asi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: rdr2_ai_bridge-asi
+          path: artifacts
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/rdr2_ai_bridge.asi
+          body: |
+            Download `rdr2_ai_bridge.asi` and copy it next to `RDR2.exe`,
+            together with `ScriptHookRDR2.dll` from
+            http://www.dev-c.com/rdr2/scripthookrdr2/
+
+            The Python runtime is dependency-free:
+
+            ```bash
+            python3 install.py --check
+            python3 -m runtime.main --backend llm
+            ```
+
+            See `docs/INSTALL.md` for the full setup guide.

@@ -1,0 +1,6 @@
+# Core runtime has no mandatory third-party dependencies.
+# Install the optional Google ADK + OpenAI-compatible backend:
+#   pip install google-adk litellm
+#
+# Install optional local audio adapters:
+#   pip install faster-whisper pyttsx3

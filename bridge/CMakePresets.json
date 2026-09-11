@@ -1,0 +1,49 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "core",
+      "displayName": "Portable bridge core + tests (no SDK)",
+      "description": "Builds the cross-platform C++17 core and bridge_core_test. Works on Linux and Windows.",
+      "binaryDir": "${sourceDir}/build/core",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "asi",
+      "displayName": "In-game .asi plugin (needs ScriptHookRDR2 SDK)",
+      "description": "Builds rdr2_ai_bridge.asi. Requires the SDK from scripts/install_scripthook_sdk.py and, on Windows, MSVC.",
+      "binaryDir": "${sourceDir}/build/asi",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "RDR2AI_HAS_SCRIPTHOOK": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "core",
+      "configurePreset": "core"
+    },
+    {
+      "name": "asi",
+      "configurePreset": "asi",
+      "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "core",
+      "configurePreset": "core",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
