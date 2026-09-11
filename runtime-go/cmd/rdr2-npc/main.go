@@ -293,8 +293,12 @@ func runCheck(settings config.Settings, opts options) int {
 	registry := tools.BuildDefaultRegistry()
 	add("tool catalog", "PASS", fmt.Sprintf("%d agent tools", len(registry.Names())))
 
-	if _, err := state.BlacklistFromFile(settings.StoryBlacklistPath); err != nil {
-		add("story blacklist", "WARN", fmt.Sprintf("unreadable: %v", err))
+	// Use the same strict loader the runtime uses: the doctor must predict
+	// whether the runtime will actually start, and eligibility fails closed
+	// without a blacklist.
+	if _, err := state.LoadBlacklistStrict(settings.StoryBlacklistPath); err != nil {
+		add("story blacklist", "FAIL", fmt.Sprintf(
+			"%v (extract rdr2-npc-portable-win64.zip, or copy config/ and data/ next to the executable)", err))
 	} else {
 		add("story blacklist", "PASS", settings.StoryBlacklistPath)
 	}
