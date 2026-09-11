@@ -36,18 +36,50 @@ configurable agent backend to choose high-level actions.
 
 ## Install
 
-The runtime core has **no third-party Python dependencies**, so a checkout runs
-as-is. One command verifies everything and wires up the optional parts:
+The runtime core has **no third-party Python dependencies**. Copy, paste, run —
+there is nothing to `pip install` for the offline path.
+
+### Linux / macOS
+
+```bash
+git clone https://github.com/ThanabordeeN/AgentRD2.git
+cd AgentRD2
+python3 install.py --check      # verify: changes nothing
+python3 run_demo.py             # scan -> activate -> decide -> speak
+```
+
+### Windows (PowerShell)
+
+```powershell
+git clone https://github.com/ThanabordeeN/AgentRD2.git
+cd AgentRD2
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+`install.cmd` does the same thing if you prefer double-clicking.
+
+### No git? Download the zip
+
+```bash
+# Linux / macOS
+curl -L https://github.com/ThanabordeeN/AgentRD2/archive/refs/heads/main.zip -o AgentRD2.zip
+unzip AgentRD2.zip && cd AgentRD2-main
+python3 install.py --check
+```
+
+```powershell
+# Windows
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/archive/refs/heads/main.zip -OutFile AgentRD2.zip
+Expand-Archive AgentRD2.zip -DestinationPath . ; cd AgentRD2-main
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+### One command to install + verify everything
 
 ```bash
 python3 install.py          # guided install + doctor + smoke test
+python3 install.py --yes    # non-interactive
 python3 install.py --check  # diagnose only, changes nothing
-```
-
-Or go straight to the demo — nothing to install:
-
-```bash
-python3 run_demo.py         # scan -> activate -> decide -> speak, no API key
 ```
 
 Full tiers (offline, live model, in-game `.asi`), Windows one-liners, and
@@ -56,7 +88,7 @@ troubleshooting: **[`docs/INSTALL.md`](docs/INSTALL.md)**.
 ### Live model, zero packages
 
 ```bash
-cp .env.example .env        # add OPENCODE_API_KEY (or any OpenAI-compatible key)
+python3 install.py --api-key "sk-your-key"     # saved to .env, no exports needed
 python3 -m runtime.main --backend llm
 ```
 
@@ -64,14 +96,22 @@ python3 -m runtime.main --backend llm
 no `google-adk`, no `litellm`, no `pip install`. Google ADK remains available
 via `python3 -m runtime.main --backend adk` (`install.py --with-adk --venv`).
 
-### Native bridge, one command (Windows)
+### Native bridge (`.asi`), no compiler needed
+
+```powershell
+# Windows: grab the prebuilt plugin from the latest release
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2_ai_bridge.asi -OutFile rdr2_ai_bridge.asi
+```
+
+Then download `ScriptHookRDR2.dll` from
+<http://www.dev-c.com/rdr2/scripthookrdr2/> and copy **both** files next to
+`RDR2.exe`. To build it yourself instead:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -WithAsi -Deploy
 ```
 
-Downloads the official SDK, builds `rdr2_ai_bridge.asi`, and copies it into the
-RDR2 folder. See [`docs/INSTALL.md`](docs/INSTALL.md#tier-2--in-game-native-bridge).
+See [`docs/INSTALL.md`](docs/INSTALL.md#tier-2--in-game-native-bridge).
 
 ## Quick start (offline, no external packages)
 
@@ -505,7 +545,7 @@ different runner/session/model-init signature, adapt only that class.
 
 Precedence, highest first: CLI flag > environment (`.env`) > `config/settings.json`
 > built-in defaults.  Copy `.env.example` to `.env`, or let
-`python3 install.py --api-key <KEY>` create it.
+`python3 install.py --api-key "sk-your-key"` create it.
 
 - `.env` — `OPENCODE_API_KEY` / `OPENAI_API_KEY`, `RDR2AI_BACKEND`,
   `RDR2AI_API_BASE`, `RDR2AI_MODEL` (git-ignored; also read from `.env.local`

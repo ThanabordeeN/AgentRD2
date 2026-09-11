@@ -14,10 +14,57 @@ runs immediately.
 
 ---
 
+## TL;DR — copy and paste
+
+```bash
+# Linux / macOS
+git clone https://github.com/ThanabordeeN/AgentRD2.git
+cd AgentRD2
+python3 install.py --check     # verify: changes nothing
+python3 run_demo.py            # scan -> activate -> decide -> speak
+```
+
+```powershell
+# Windows (PowerShell)
+git clone https://github.com/ThanabordeeN/AgentRD2.git
+cd AgentRD2
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+No git? Use the zip:
+
+```bash
+curl -L https://github.com/ThanabordeeN/AgentRD2/archive/refs/heads/main.zip -o AgentRD2.zip
+unzip AgentRD2.zip && cd AgentRD2-main && python3 install.py --check
+```
+
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/archive/refs/heads/main.zip -OutFile AgentRD2.zip
+Expand-Archive AgentRD2.zip -DestinationPath . ; cd AgentRD2-main
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Add a model key and run for real (still no packages to install):
+
+```bash
+python3 install.py --api-key "sk-your-key"
+python3 -m runtime.main --backend llm
+```
+
+Put the NPCs in the actual game (no compiler needed):
+
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2_ai_bridge.asi -OutFile rdr2_ai_bridge.asi
+# + ScriptHookRDR2.dll from http://www.dev-c.com/rdr2/scripthookrdr2/
+# copy both next to RDR2.exe
+```
+
+---
+
 ## Tier 0 — Zero install
 
 ```bash
-git clone <repo> && cd AgentRD2
+git clone https://github.com/ThanabordeeN/AgentRD2.git && cd AgentRD2
 python3 install.py --check     # diagnose: verifies Python, layout, packs, key
 python3 run_demo.py            # full path: scan -> activate -> speak
 ```
@@ -106,9 +153,20 @@ game). To drive real NPCs you need the `.asi` plugin inside RDR2.
 CI builds `rdr2_ai_bridge.asi` on every push and attaches it to tagged
 releases, so you can skip the SDK, CMake, and MSVC entirely:
 
-1. grab `rdr2_ai_bridge.asi` from the latest release or the `build` workflow artifacts
-2. download `ScriptHookRDR2.dll` from <http://www.dev-c.com/rdr2/scripthookrdr2/>
-3. copy both next to `RDR2.exe`
+```powershell
+Invoke-WebRequest https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2_ai_bridge.asi -OutFile rdr2_ai_bridge.asi
+```
+
+```bash
+# or on any OS
+curl -L -o rdr2_ai_bridge.asi https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2_ai_bridge.asi
+```
+
+Then:
+
+1. download `ScriptHookRDR2.dll` from <http://www.dev-c.com/rdr2/scripthookrdr2/>
+2. copy **both** files next to `RDR2.exe`
+3. start the runtime (`python3 -m runtime.main --backend llm`) before launching the game
 
 ### Option B — Windows, one command
 
@@ -252,7 +310,7 @@ API key resolution, SDK presence, and the C++ toolchain.
 | `python3: command not found` | Install Python 3.10+, or use `py -3` on Windows |
 | `No module named runtime` | Run from the repo root: `cd AgentRD2` |
 | `invalid backend 'x' from RDR2AI_BACKEND` | Fix `RDR2AI_BACKEND` in `.env` (or delete the line) |
-| `No OpenAI-compatible API key found` | `python3 install.py --api-key <KEY>` or edit `.env` |
+| `No OpenAI-compatible API key found` | `python3 install.py --api-key "sk-your-key"` or edit `.env` |
 | Model call returns 401/404 | Wrong key, or `RDR2AI_API_BASE` needs `/v1` (or shouldn't have it) |
 | Live replies feel slow | Lower `reasoning_effort`, or see the thinking policy in `config/settings.json` |
 | `.asi` not loading in game | `ScriptHookRDR2.dll` missing next to `RDR2.exe`, or wrong game build |

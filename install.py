@@ -319,7 +319,7 @@ def check_api_key(args: Optional[argparse.Namespace] = None) -> Check:
         "api key",
         SKIP,
         "not configured (only needed for --backend llm / adk)",
-        "run: python3 install.py --api-key <KEY>   (writes .env)",
+        'run: python3 install.py --api-key "sk-your-key"   (writes .env)',
     )
 
 
@@ -790,7 +790,9 @@ def next_steps(args: argparse.Namespace, checks: Sequence[Check]) -> List[str]:
     else:
         key_state = by_name.get("api key")
         if key_state is not None and key_state.status != OK and not args.api_key:
-            entries.append((f"{python} install.py --api-key <KEY>", "save your key to .env first"))
+            entries.append(
+                (f'{python} install.py --api-key "sk-your-key"', "save your key to .env first")
+            )
         command = f"{python} -m runtime.main --backend {backend}"
         if args.model:
             command += f" --model {args.model}"
