@@ -20,6 +20,19 @@ class TimelineStoreTests(unittest.TestCase):
         self.assertEqual([e1.seq, e2.seq, e3.seq], [1, 2, 1])
         self.assertEqual([e.seq for e in self.store.all_events("npc_1")], [1, 2])
 
+    def test_append_recreates_a_vanished_directory(self):
+        # A disconnect handler can still write NPC_RELEASED after a temporary
+        # timeline directory was removed; that must not raise FileNotFoundError.
+        self.store.append_event("npc_1", "NPC_ACTIVATED")
+        timeline_dir = Path(self.tmp.name)
+        for path in timeline_dir.iterdir():
+            path.unlink()
+        timeline_dir.rmdir()
+
+        event = self.store.append_event("npc_1", "NPC_RELEASED")
+        self.assertEqual(event.event_name, "NPC_RELEASED")
+        self.assertTrue(self.store.path_for("npc_1").exists())
+
     def test_grab_timeline_filters(self):
         self.store.append_event("npc_1", "PLAYER_THREATENED_NPC", tags=["player", "threat"], importance=0.9, entities=["player"])
         self.store.append_event("npc_1", "PLAYER_HELPED_NPC", tags=["player", "help"], importance=0.8, entities=["player"])

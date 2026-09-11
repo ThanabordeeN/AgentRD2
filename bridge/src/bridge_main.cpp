@@ -20,7 +20,9 @@ namespace {
 constexpr char kBridgeHost[] = "127.0.0.1";
 constexpr unsigned short kBridgePort = 8765;
 
-ScriptHookNativeApi g_native_api;
+// Both bridge types live in namespace rdr2ai; this TU is only compiled with
+// the SDK, so an unqualified name here would never be caught elsewhere.
+rdr2ai::ScriptHookNativeApi g_native_api;
 std::unique_ptr<rdr2ai::BridgeRuntime> g_bridge;
 bool g_push_to_talk_down = false;
 

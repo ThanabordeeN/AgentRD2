@@ -72,6 +72,10 @@ class TimelineStore:
             event = Event.from_dict({**event.to_dict(), "seq": expected})
         path = self.path_for(event.npc_id)
         line = json.dumps(event.to_dict(), ensure_ascii=False, separators=(",", ":"))
+        # Recreate the directory if it vanished (e.g. a temp timeline dir was
+        # cleaned up while a disconnect handler was still writing); otherwise
+        # Windows raises FileNotFoundError from the open() below.
+        path.parent.mkdir(parents=True, exist_ok=True)
         # JSONL append; one write call is important enough for a game runtime.
         with path.open("a", encoding="utf-8") as fh:
             fh.write(line + "\n")

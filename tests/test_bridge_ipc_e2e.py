@@ -2,12 +2,14 @@ import json
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import threading
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+IS_WINDOWS = sys.platform.startswith("win")
 
 
 class BridgeIpcEndToEndTests(unittest.TestCase):
@@ -15,7 +17,8 @@ class BridgeIpcEndToEndTests(unittest.TestCase):
     def test_cpp_bridge_executes_action_request_over_real_tcp(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            client_bin = tmp_path / "ipc_e2e_client"
+            # MinGW insists on the .exe suffix when the target is executed.
+            client_bin = tmp_path / ("ipc_e2e_client.exe" if IS_WINDOWS else "ipc_e2e_client")
             compile_cmd = [
                 "g++", "-std=c++17", "-O0",
                 "-pthread",
@@ -29,6 +32,9 @@ class BridgeIpcEndToEndTests(unittest.TestCase):
                 str(ROOT / "bridge/src/bridge_runtime.cpp"),
                 "-o", str(client_bin),
             ]
+            if IS_WINDOWS:
+                # ipc_client.cpp uses winsock on Windows.
+                compile_cmd.append("-lws2_32")
             compiled = subprocess.run(compile_cmd, capture_output=True, text=True)
             self.assertEqual(compiled.returncode, 0, compiled.stderr)
 

@@ -579,6 +579,24 @@ def step_sdk(ctx: Context) -> Check:
     return Check("ScriptHook SDK", OK, f"installed at {root}")
 
 
+def _cmake_platform_args(cmake: str) -> List[str]:
+    """Return ``-A x64`` when CMake's default generator targets 32-bit Windows.
+
+    RDR2 is a 64-bit game and the ScriptHookRDR2 import library is x64, so a
+    Win32 build would fail to link.  ``-A`` is only valid for Visual Studio
+    generators, hence the generator probe.
+    """
+    if platform.system() != "Windows":
+        return []
+    if os.environ.get("CMAKE_GENERATOR"):
+        return []  # the user pinned a generator; respect their choice
+    result = _run([cmake, "--help"])
+    for line in ((result.stdout or "") + (result.stderr or "")).splitlines():
+        if line.startswith("*"):
+            return ["-A", "x64"] if "Visual Studio" in line else []
+    return []
+
+
 def step_bridge(ctx: Context) -> Check:
     args = ctx.args
     if not (args.with_bridge or args.with_asi):
@@ -595,6 +613,7 @@ def step_bridge(ctx: Context) -> Check:
             "-B",
             str(build_dir),
             "-DCMAKE_BUILD_TYPE=Release",
+            *_cmake_platform_args(cmake),
         ]
         if args.with_asi:
             configure.append("-DRDR2AI_HAS_SCRIPTHOOK=ON")

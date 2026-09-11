@@ -161,6 +161,23 @@ class DoctorCheckTests(unittest.TestCase):
         args = installer.build_parser().parse_args([])
         self.assertIn(installer.check_build_tools(args).status, {installer.OK, installer.SKIP})
 
+    def test_cmake_platform_args_returns_empty_off_windows(self):
+        if sys.platform.startswith("win"):
+            self.skipTest("windows goes through the Visual Studio generator probe")
+        self.assertEqual(installer._cmake_platform_args(sys.executable), [])
+
+    def test_cmake_platform_args_pins_x64_for_visual_studio(self):
+        # RDR2 is 64-bit: a Win32 build cannot link the x64 ScriptHookRDR2.lib.
+        with mock.patch.object(installer.platform, "system", return_value="Windows"), \
+                mock.patch.object(installer, "_run") as run:
+            run.return_value = subprocess.CompletedProcess(
+                [], 0, "* Visual Studio 17 2022        = Generators\n", ""
+            )
+            self.assertEqual(installer._cmake_platform_args("cmake"), ["-A", "x64"])
+
+            run.return_value = subprocess.CompletedProcess([], 0, "* Ninja = Generators\n", "")
+            self.assertEqual(installer._cmake_platform_args("cmake"), [])
+
     def test_sdk_check_accepts_explicit_root(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

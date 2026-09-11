@@ -58,7 +58,7 @@ jobs:
         run: python scripts/install_scripthook_sdk.py
 
       - name: Configure
-        run: cmake -S bridge -B bridge/build -DRDR2AI_HAS_SCRIPTHOOK=ON -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S bridge -B bridge/build -A x64 -DRDR2AI_HAS_SCRIPTHOOK=ON -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build bridge/build --config Release
@@ -72,7 +72,7 @@ jobs:
 
       - name: Portable core test
         run: |
-          cmake -S bridge -B bridge/build-core
+          cmake -S bridge -B bridge/build-core -A x64
           cmake --build bridge/build-core --config Release
           ctest --test-dir bridge/build-core -C Release --output-on-failure
 
