@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rdr2-living-npc"
-version = "0.2.0"
+version = "0.3.0"
 description = "Event-driven ambient NPC agent overlay for Red Dead Redemption 2"
 requires-python = ">=3.10"
 dependencies = []

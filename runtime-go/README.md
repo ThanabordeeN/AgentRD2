@@ -54,6 +54,14 @@ runtime-go/
 adapter, so any `/v1/responses` endpoint works (OpenCode Go, OpenAI, and
 gateways that speak the same surface).
 
+The backend renders the same prompt as the Python `llm` backend and parses the
+same JSON decision contract. One deliberate difference from Python's
+`GoogleADKBackend`: that one registers the game tools as native ADK function
+tools and lets the model call them mid-generation. The Go backend is
+prompt-in/decision-out, which is also how the Python backend most people
+actually run (`--backend llm`) behaves. Per-NPC context, guardrails and
+argument normalisation all still apply, so the observable behaviour matches.
+
 Configuration follows the same precedence as the Python runtime —
 **CLI flag > environment (`.env`) > `config/settings.json`**:
 
