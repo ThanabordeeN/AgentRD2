@@ -8,6 +8,7 @@
 #   .\install.ps1 -WithAsi            download SDK + build the .asi
 #   .\install.ps1 -WithAsi -Deploy    ...and copy it into the game folder
 #   .\install.ps1 -ApiKey sk-...      save a key to .env
+#   .\install.ps1 -Standalone         no Python at all: fetch the prebuilt runtime
 #
 # If PowerShell blocks the script, run it like this instead:
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1
@@ -21,6 +22,8 @@ param(
     [switch]$Probe,
     [switch]$FullSmoke,
     [switch]$Deploy,
+    [switch]$Standalone,
+    [string]$StandaloneDir = "",
     [string]$ApiKey = "",
     [string]$GameDir = ""
 )
@@ -28,6 +31,35 @@ param(
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ProjectRoot
+
+# ---------------------------------------------------------------------------
+# Standalone: no Python required at all
+# ---------------------------------------------------------------------------
+if ($Standalone) {
+    $bundleUrl = "https://github.com/ThanabordeeN/AgentRD2/releases/latest/download/rdr2-npc-portable-win64.zip"
+    if (-not $StandaloneDir) { $StandaloneDir = Join-Path $ProjectRoot "rdr2-npc-standalone" }
+    $zip = Join-Path ([System.IO.Path]::GetTempPath()) "rdr2-npc-portable-win64.zip"
+
+    Write-Host ""
+    Write-Host "RDR2 Living NPC Agent - standalone runtime (no Python needed)" -ForegroundColor White
+    Write-Host "downloading $bundleUrl"
+    Invoke-WebRequest -Uri $bundleUrl -OutFile $zip -UseBasicParsing
+
+    if (Test-Path $StandaloneDir) { Remove-Item -Recurse -Force $StandaloneDir }
+    New-Item -ItemType Directory -Force -Path $StandaloneDir | Out-Null
+    Expand-Archive -Path $zip -DestinationPath $StandaloneDir
+    Remove-Item $zip -Force -ErrorAction SilentlyContinue
+
+    Write-Host "extracted to $StandaloneDir" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Verify and run:"
+    Write-Host "  cd `"$StandaloneDir`""
+    Write-Host "  .\rdr2-npc.exe --check"
+    Write-Host "  .\rdr2-npc.exe --backend adk      # or --backend rule for offline"
+    Write-Host ""
+    Write-Host "Configuration (.env or config/settings.json) works exactly like the Python runtime."
+    exit 0
+}
 
 function Write-Head($text) {
     Write-Host ""

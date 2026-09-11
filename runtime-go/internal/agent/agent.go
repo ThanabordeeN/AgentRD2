@@ -152,7 +152,9 @@ func NewRuntime(opts Options) (*Runtime, error) {
 
 	eligibility := opts.Eligibility
 	if eligibility == nil {
-		blacklist, err := state.BlacklistFromFile(settings.StoryBlacklistPath)
+		// Fail closed: the Python runtime refuses to start when the story
+		// blacklist is missing, so a ped can never be taken over without it.
+		blacklist, err := state.LoadBlacklistStrict(settings.StoryBlacklistPath)
 		if err != nil {
 			return nil, fmt.Errorf("agent: load story blacklist: %w", err)
 		}

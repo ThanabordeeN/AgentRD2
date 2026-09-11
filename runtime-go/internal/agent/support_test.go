@@ -3,6 +3,7 @@ package agent
 import (
 	"context"
 	"errors"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -52,14 +53,24 @@ func TestNewRuntimeDefaults(t *testing.T) {
 		t.Fatalf("unexpected rule backend: %s/%v", rule.Name(), rule.SupportsWaitGestures())
 	}
 
-	// A missing story blacklist file is tolerated: the state package degrades
-	// to an empty blacklist (unlike Python's EligibilityGate.from_config,
-	// which raises FileNotFoundError). Construction still succeeds so the
-	// runtime keeps running with the conservative field checks.
+	// A missing story blacklist is fatal, exactly like Python's
+	// EligibilityGate.from_config: eligibility fails closed, so the runtime
+	// refuses to start rather than taking over peds it cannot vet.
 	missing := settings
 	missing.StoryBlacklistPath = filepath.Join(dir, "nope.json")
-	if _, err := NewRuntime(Options{Settings: &missing}); err != nil {
-		t.Fatalf("a missing blacklist should degrade to an empty one: %v", err)
+	if _, err := NewRuntime(Options{Settings: &missing}); err == nil {
+		t.Fatal("a missing blacklist must stop the runtime from starting (fails closed)")
+	}
+
+	// Malformed content is fatal too.
+	broken := settings
+	brokenPath := filepath.Join(dir, "broken.json")
+	if err := os.WriteFile(brokenPath, []byte("{not json"), 0o644); err != nil {
+		t.Fatalf("write broken blacklist: %v", err)
+	}
+	broken.StoryBlacklistPath = brokenPath
+	if _, err := NewRuntime(Options{Settings: &broken}); err == nil {
+		t.Fatal("an unparseable blacklist must stop the runtime from starting")
 	}
 }
 

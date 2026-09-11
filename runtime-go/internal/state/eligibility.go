@@ -2,6 +2,7 @@ package state
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -90,11 +91,11 @@ func NewBlacklist(categories map[string]any) *Blacklist {
 	return blacklist
 }
 
-// BlacklistFromFile loads "config/story_blacklist.json".
+// BlacklistFromFile loads "config/story_blacklist.json" best-effort.
 //
 // A missing, unreadable, corrupt or non-object file yields an empty blacklist
-// and a nil error: an unreadable blacklist must never stop the runtime, and
-// the eligibility gate is conservative regardless.
+// and a nil error. Use this only for diagnostics; the runtime itself must use
+// LoadBlacklistStrict so eligibility fails closed.
 func BlacklistFromFile(path string) (*Blacklist, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -103,6 +104,27 @@ func BlacklistFromFile(path string) (*Blacklist, error) {
 	var categories map[string]any
 	if err := json.Unmarshal(data, &categories); err != nil {
 		return NewBlacklist(nil), nil
+	}
+	return NewBlacklist(categories), nil
+}
+
+// LoadBlacklistStrict loads the story blacklist and fails when the file is
+// missing, unparseable, or empty.
+//
+// Eligibility fails closed, so the runtime refuses to start without its
+// blacklist rather than quietly accepting every ped. This mirrors the Python
+// EligibilityGate.from_config, which raises FileNotFoundError.
+func LoadBlacklistStrict(path string) (*Blacklist, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("story blacklist %s: %w", path, err)
+	}
+	var categories map[string]any
+	if err := json.Unmarshal(data, &categories); err != nil {
+		return nil, fmt.Errorf("story blacklist %s: invalid JSON: %w", path, err)
+	}
+	if len(categories) == 0 {
+		return nil, fmt.Errorf("story blacklist %s: no categories defined", path)
 	}
 	return NewBlacklist(categories), nil
 }
