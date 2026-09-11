@@ -113,7 +113,10 @@ jobs:
           Copy-Item -Recurse -Path scenarios -Destination "$stage/"
           New-Item -ItemType Directory -Force -Path "$stage/data/timelines" | Out-Null
           Remove-Item "$stage/data/timelines/*" -Force -ErrorAction SilentlyContinue
+          # Ship a ready-to-edit .env: pasting the key there is the documented
+          # way to configure the standalone runtime.
           Copy-Item .env.example "$stage/.env.example"
+          Copy-Item .env.example "$stage/.env"
           Copy-Item docs/INSTALL.md "$stage/INSTALL.md"
           Compress-Archive -Path "$stage/*" -DestinationPath "dist/rdr2-npc-portable-win64.zip"
 

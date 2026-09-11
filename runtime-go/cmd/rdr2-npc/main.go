@@ -58,8 +58,9 @@ type options struct {
 
 func run(args []string) int {
 	// Pick up .env / .env.local / config/local.env before anything reads the
-	// environment, mirroring the Python runtime.
-	_, _ = dotenv.LoadEnv(nil, false)
+	// environment, mirroring the Python runtime. The applied values are kept so
+	// the doctor can say where a key came from.
+	envApplied, _ := dotenv.LoadEnv(nil, false)
 
 	opts := options{}
 	fs := flag.NewFlagSet("rdr2-npc", flag.ContinueOnError)
@@ -98,7 +99,7 @@ func run(args []string) int {
 	applyEnvOverrides(&settings, &opts)
 
 	if opts.check {
-		return runCheck(settings, opts)
+		return runCheck(settings, opts, envApplied)
 	}
 	if opts.scenariosDir != "" {
 		return runScenarios(settings, opts)
@@ -253,7 +254,7 @@ type checkResult struct {
 	Detail string `json:"detail"`
 }
 
-func runCheck(settings config.Settings, opts options) int {
+func runCheck(settings config.Settings, opts options, envApplied map[string]string) int {
 	checks := []checkResult{}
 	add := func(name, status, detail string) {
 		checks = append(checks, checkResult{Name: name, Status: status, Detail: detail})
@@ -304,9 +305,10 @@ func runCheck(settings config.Settings, opts options) int {
 	}
 
 	if backend.ResolveAPIKey(opts.apiKey, opts.apiKeyEnv) == "" {
-		add("api key", "WARN", "not configured (only needed for --backend adk)")
+		add("api key", "WARN",
+			"not configured (only needed for --backend adk) — copy .env.example to .env and add OPENCODE_API_KEY")
 	} else {
-		add("api key", "PASS", "resolved")
+		add("api key", "PASS", describeAPIKeySource(opts, envApplied))
 	}
 
 	failed := false
@@ -339,6 +341,29 @@ func envOr(name, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+// describeAPIKeySource names where the credential came from, so "api key: PASS"
+// is actionable when someone cannot work out which file is being read.
+func describeAPIKeySource(opts options, envApplied map[string]string) string {
+	if opts.apiKey != "" {
+		return "provided on the command line"
+	}
+	seen := map[string]bool{}
+	for _, name := range []string{opts.apiKeyEnv, "OPENCODE_API_KEY", "OPENAI_API_KEY"} {
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		if os.Getenv(name) == "" {
+			continue
+		}
+		if _, fromFile := envApplied[name]; fromFile {
+			return fmt.Sprintf("from .env (%s)", name)
+		}
+		return fmt.Sprintf("from the environment (%s)", name)
+	}
+	return "from local OpenCode credentials (~/.local/share/opencode/auth.json)"
 }
 
 func joinFailures(failures []string) string {

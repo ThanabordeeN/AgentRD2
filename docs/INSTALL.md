@@ -68,6 +68,40 @@ environment (`.env`) > `config/settings.json`:
 .\rdr2-npc.exe --api-key "sk-..." --backend adk
 ```
 
+### Putting the API key in a file
+
+The easiest way: open the `.env` that ships inside the bundle and paste the key.
+
+```dotenv
+OPENCODE_API_KEY=sk-...
+# RDR2AI_BACKEND=adk
+# RDR2AI_MODEL=deepseek-v4.1-flash
+```
+
+| File | Loaded? | Notes |
+|---|---|---|
+| `.env` | yes | next to the executable (or in the checkout root). Ships with the bundle. |
+| `.env.local` | yes | same format, loaded after `.env` |
+| `config/local.env` | yes | same format |
+| `config/settings.json` | **no raw key** | holds `adk.api_key_env` (the *name* of the variable), the model and the base URL — not the secret itself |
+
+Run `--check` to confirm where the key came from:
+
+```text
+PASS api key          from .env (OPENCODE_API_KEY)
+```
+
+Precedence, highest first:
+
+```text
+--api-key flag  >  .env / .env.local / config/local.env / environment
+                >  ~/.local/share/opencode/auth.json
+```
+
+Keep the key out of `config/settings.json`: that file is tracked in git, so a
+key pasted there ends up in your next commit. `.env` is git-ignored in this
+repository for exactly that reason.
+
 Useful flags:
 
 | Flag | Meaning |
