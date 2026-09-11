@@ -42,6 +42,65 @@ jobs:
         run: python -m unittest discover -s tests -v
 
   # ---------------------------------------------------------------------------
+  # Go runtime: a standalone executable that needs no Python installed.
+  # ---------------------------------------------------------------------------
+  go-runtime:
+    name: go runtime (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.x"
+          cache-dependency-path: runtime-go/go.sum
+
+      - name: Formatting
+        working-directory: runtime-go
+        shell: bash
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "these files need gofmt:"; echo "$unformatted"; exit 1
+          fi
+
+      - name: Vet
+        working-directory: runtime-go
+        run: go vet ./...
+
+      - name: Tests
+        working-directory: runtime-go
+        run: go test ./...
+
+      - name: Parity against the shared scenarios
+        working-directory: runtime-go
+        run: go run ./cmd/rdr2-npc --scenarios ../scenarios --json
+
+      - name: Build the standalone Windows runtime
+        if: runner.os == 'Windows'
+        working-directory: runtime-go
+        run: go build -trimpath -ldflags "-s -w" -o rdr2-npc.exe ./cmd/rdr2-npc
+
+      - name: Smoke test the executable
+        if: runner.os == 'Windows'
+        working-directory: runtime-go
+        shell: pwsh
+        run: |
+          .\rdr2-npc.exe --version
+          .\rdr2-npc.exe --check
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: rdr2-npc-runtime-exe
+          path: runtime-go/rdr2-npc.exe
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
   # Tier 2: publish the in-game plugin so users need no compiler.
   # ---------------------------------------------------------------------------
   asi:
@@ -88,7 +147,7 @@ jobs:
   release:
     name: attach artifacts to release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [asi]
+    needs: [asi, go-runtime]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -98,15 +157,32 @@ jobs:
           name: rdr2_ai_bridge-asi
           path: artifacts
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: rdr2-npc-runtime-exe
+          path: artifacts
+
       - uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/rdr2_ai_bridge.asi
+          files: |
+            artifacts/**/rdr2_ai_bridge.asi
+            artifacts/**/rdr2-npc.exe
           body: |
-            Download `rdr2_ai_bridge.asi` and copy it next to `RDR2.exe`,
-            together with `ScriptHookRDR2.dll` from
-            http://www.dev-c.com/rdr2/scripthookrdr2/
+            Two downloads, pick what you need:
 
-            The Python runtime is dependency-free:
+            | File | What it is |
+            |---|---|
+            | `rdr2-npc.exe` | Standalone runtime — **no Python required**. |
+            | `rdr2_ai_bridge.asi` | In-game plugin. Copy next to `RDR2.exe`, together with `ScriptHookRDR2.dll` from http://www.dev-c.com/rdr2/scripthookrdr2/ |
+
+            Standalone runtime:
+
+            ```powershell
+            .\rdr2-npc.exe --check
+            .\rdr2-npc.exe --backend adk
+            ```
+
+            Python runtime (dependency-free, still supported):
 
             ```bash
             python3 install.py --check

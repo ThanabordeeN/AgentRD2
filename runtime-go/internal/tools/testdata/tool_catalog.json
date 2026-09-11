@@ -1,0 +1,635 @@
+[
+ {
+  "description": "Aim a weapon at an entity or position (deferred combat).",
+  "name": "aim_at",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 3.0,
+     "maximum": 30.0,
+     "minimum": 0.1,
+     "type": "number"
+    },
+    "entity": {
+     "type": "string"
+    },
+    "position": {
+     "items": {
+      "type": "number"
+     },
+     "maxItems": 3,
+     "minItems": 3,
+     "type": "array"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Perform a scripted interaction with an animal.",
+  "name": "animal_interaction",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "interaction_model": {
+     "type": "string"
+    },
+    "interaction_type": {
+     "type": "string"
+    },
+    "skip_idle_animation": {
+     "default": false,
+     "type": "boolean"
+    },
+    "target": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "target",
+    "interaction_type",
+    "interaction_model"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Attack an entity (deferred combat).",
+  "name": "attack",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Stop looking/attending to the current target.",
+  "name": "clear_attention",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  }
+ },
+ {
+  "description": "Cower away from a threat.",
+  "name": "cower",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 3.0,
+     "maximum": 30.0,
+     "minimum": 0.2,
+     "type": "number"
+    },
+    "from_entity": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Dismount the currently mounted animal.",
+  "name": "dismount",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  }
+ },
+ {
+  "description": "Duck down defensively for a short time.",
+  "name": "duck",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "maximum": 30.0,
+     "minimum": 0.2,
+     "type": "number"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Turn the body/head toward an entity.",
+  "name": "face",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Move away from an entity in a panic/flee state.",
+  "name": "flee_from",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Follow an entity at a comfortable distance.",
+  "name": "follow",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "distance": {
+     "maximum": 50.0,
+     "minimum": 0.5,
+     "type": "number"
+    },
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Play a generic gesture animation.",
+  "name": "gesture",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "type": {
+     "enum": [
+      "neutral",
+      "friendly",
+      "annoyed",
+      "afraid",
+      "wave",
+      "nod",
+      "shrug",
+      "think",
+      "ponder",
+      "scheme"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "type"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Look up offline Red Dead Wiki lore/context for a topic or for this NPC.",
+  "name": "get_world_lore",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "topic": {
+     "description": "Location, faction, activity, or event to look up.",
+     "type": "string"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Return the NPC's current relevant world state.",
+  "name": "get_world_state",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  }
+ },
+ {
+  "description": "Walk or ride to a named or positional destination using RDR2 navigation.",
+  "name": "go_to",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "destination": {
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "additionalProperties": false,
+       "properties": {
+        "position": {
+         "items": {
+          "type": "number"
+         },
+         "maxItems": 3,
+         "minItems": 3,
+         "type": "array"
+        },
+        "region": {
+         "type": "string"
+        }
+       },
+       "type": "object"
+      }
+     ]
+    },
+    "priority": {
+     "enum": [
+      "low",
+      "normal",
+      "high"
+     ],
+     "type": "string"
+    }
+   },
+   "required": [
+    "destination"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Retrieve older named events from this NPC's JSONL timeline. Use deterministic filters; no semantic search exists in the MVP.",
+  "name": "grab_timeline",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "before_seq": {
+     "minimum": 1,
+     "type": "integer"
+    },
+    "entity": {
+     "type": "string"
+    },
+    "event_name": {
+     "type": "string"
+    },
+    "event_names": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "limit": {
+     "default": 20,
+     "maximum": 200,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "minimum_importance": {
+     "maximum": 1.0,
+     "minimum": 0.0,
+     "type": "number"
+    },
+    "since_seq": {
+     "minimum": 0,
+     "type": "integer"
+    },
+    "tag": {
+     "type": "string"
+    },
+    "tags": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Raise hands in surrender or fear.",
+  "name": "hands_up",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 3.0,
+     "maximum": 30.0,
+     "minimum": 0.2,
+     "type": "number"
+    },
+    "face_entity": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Perform a scripted horse action.",
+  "name": "horse_action",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "action": {
+     "type": "integer"
+    },
+    "target": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "action"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Move toward a position to investigate it.",
+  "name": "investigate",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "position": {
+     "items": {
+      "type": "number"
+     },
+     "maxItems": 3,
+     "minItems": 3,
+     "type": "array"
+    }
+   },
+   "required": [
+    "position"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Perform a scripted item interaction.",
+  "name": "item_interaction",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "interaction": {
+     "type": "string"
+    },
+    "item": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "item",
+    "interaction"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Jump or startle in place.",
+  "name": "jump",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  }
+ },
+ {
+  "description": "Look at an entity without preventing other actions.",
+  "name": "look_at",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Mount a horse or other rideable animal.",
+  "name": "mount",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "React physically to an entity or position.",
+  "name": "react",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    },
+    "position": {
+     "items": {
+      "type": "number"
+     },
+     "maxItems": 3,
+     "minItems": 3,
+     "type": "array"
+    },
+    "reaction": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Speak a short line through the TTS pipeline.",
+  "name": "say",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "emotion": {
+     "type": "string"
+    },
+    "target": {
+     "type": "string"
+    },
+    "text": {
+     "maxLength": 500,
+     "minLength": 1,
+     "type": "string"
+    }
+   },
+   "required": [
+    "text"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Shoot at an entity or position (deferred combat).",
+  "name": "shoot_at",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 3.0,
+     "maximum": 30.0,
+     "minimum": 0.1,
+     "type": "number"
+    },
+    "entity": {
+     "type": "string"
+    },
+    "position": {
+     "items": {
+      "type": "number"
+     },
+     "maxItems": 3,
+     "minItems": 3,
+     "type": "array"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Stop the current movement action.",
+  "name": "stop",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  }
+ },
+ {
+  "description": "Take cover from an entity or position (deferred combat).",
+  "name": "take_cover",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 5.0,
+     "maximum": 30.0,
+     "minimum": 0.1,
+     "type": "number"
+    },
+    "from_entity": {
+     "type": "string"
+    },
+    "from_position": {
+     "items": {
+      "type": "number"
+     },
+     "maxItems": 3,
+     "minItems": 3,
+     "type": "array"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Play a short thinking/listening/waiting gesture while a decision or speech is being prepared.",
+  "name": "think",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "default": 2.5,
+     "maximum": 30.0,
+     "minimum": 0.2,
+     "type": "number"
+    },
+    "style": {
+     "default": "think",
+     "enum": [
+      "neutral",
+      "think",
+      "ponder",
+      "listen",
+      "alert",
+      "scheme"
+     ],
+     "type": "string"
+    }
+   },
+   "type": "object"
+  }
+ },
+ {
+  "description": "Wait for a short duration before the next decision.",
+  "name": "wait",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "duration": {
+     "maximum": 120.0,
+     "minimum": 0.0,
+     "type": "number"
+    }
+   },
+   "required": [
+    "duration"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Walk away from an entity without panic.",
+  "name": "walk_away",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "entity": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "entity"
+   ],
+   "type": "object"
+  }
+ },
+ {
+  "description": "Wander around the current area within a radius.",
+  "name": "wander",
+  "parameters": {
+   "additionalProperties": false,
+   "properties": {
+    "radius": {
+     "maximum": 100.0,
+     "minimum": 0.5,
+     "type": "number"
+    }
+   },
+   "required": [
+    "radius"
+   ],
+   "type": "object"
+  }
+ }
+]

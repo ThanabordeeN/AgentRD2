@@ -5,9 +5,11 @@
 # `install.ps1` or run the underlying commands directly.
 
 PYTHON ?= python3
+GO ?= go
 SCENARIOS ?= scenarios
 
-.PHONY: help setup doctor demo runtime llm test scenarios lint bridge asi sdk wiki clean
+.PHONY: help setup doctor demo runtime llm test scenarios lint bridge asi sdk wiki clean \
+	go-test go-build go-run go-exe go-fmt
 
 help: ## show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -53,6 +55,24 @@ wiki: ## refresh the offline Red Dead Wiki context packs
 	$(PYTHON) scripts/fetch_wiki_context.py
 	$(PYTHON) scripts/fetch_character_context.py
 
+# --- Go runtime (standalone .exe, no Python required) ----------------------
+
+go-test: ## run the Go runtime test suite
+	cd runtime-go && $(GO) test ./...
+
+go-build: ## compile the Go runtime
+	cd runtime-go && $(GO) build ./...
+
+go-run: ## start the Go runtime with the ADK model backend
+	cd runtime-go && $(GO) run ./cmd/rdr2-npc --backend adk
+
+go-exe: ## build the standalone executable for this machine
+	cd runtime-go && $(GO) build -trimpath -ldflags "-s -w" -o rdr2-npc ./cmd/rdr2-npc
+
+go-fmt: ## format the Go sources
+	cd runtime-go && $(GO) fmt ./...
+
 clean: ## remove build output and caches (keeps timelines and .env)
 	rm -rf bridge/build .pytest_cache
+	rm -f runtime-go/rdr2-npc runtime-go/rdr2-npc.exe
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +

@@ -16,3 +16,11 @@ bridge/*.asi
 bridge/.sdk/
 .sdk_local/
 .install-state.json
+
+# Go runtime
+runtime-go/rdr2-npc
+runtime-go/rdr2-npc.exe
+runtime-go/*.exe
+runtime-go/*.test
+runtime-go/dist/
+runtime-go/coverage.out
