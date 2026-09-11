@@ -30,10 +30,14 @@ import (
 	"github.com/ThanabordeeN/AgentRD2/runtime-go/internal/tools"
 )
 
-// version is overridable at build time:
+// version is overridden at build time so a released binary reports the tag it
+// came from:
 //
 //	go build -ldflags "-X main.version=1.2.3" ./cmd/rdr2-npc
-var version = "0.3.0"
+//
+// A plain `go build` reports the development placeholder rather than claiming
+// to be a release.
+var version = "0.0.0-dev"
 
 func main() {
 	os.Exit(run(os.Args[1:]))

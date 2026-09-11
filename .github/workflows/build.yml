@@ -90,7 +90,15 @@ jobs:
       - name: Build the standalone Windows runtime
         if: runner.os == 'Windows'
         working-directory: runtime-go
-        run: go build -trimpath -ldflags "-s -w" -o rdr2-npc.exe ./cmd/rdr2-npc
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $version = "${{ github.ref_name }}".TrimStart("v")
+          } else {
+            $version = "dev-" + "${{ github.sha }}".Substring(0, 7)
+          }
+          Write-Host "building rdr2-npc $version"
+          go build -trimpath -ldflags "-s -w -X main.version=$version" -o rdr2-npc.exe ./cmd/rdr2-npc
 
       - name: Smoke test the executable
         if: runner.os == 'Windows'
